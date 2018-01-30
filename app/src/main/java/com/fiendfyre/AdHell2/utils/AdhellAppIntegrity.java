@@ -26,6 +26,8 @@ import java.util.Set;
 import javax.inject.Inject;
 
 public class AdhellAppIntegrity {
+    public static final String ADHELL_STANDARD_PACKAGE = "https://goo.gl/GbSyNf";
+
     private final static String DEFAULT_POLICY_ID = "default-policy";
     private static final String TAG = AdhellAppIntegrity.class.getCanonicalName();
     private static final String DEFAULT_POLICY_CHECKED = "adhell_default_policy_created";
@@ -34,7 +36,6 @@ public class AdhellAppIntegrity {
     private static final String MOVE_APP_PERMISSIONS = "adhell_app_permissions_moved";
     private static final String DEFAULT_PACKAGES_FIREWALL_WHITELISTED = "adhell_default_packages_firewall_whitelisted";
     private static final String CHECK_ADHELL_STANDARD_PACKAGE = "adhell_adhell_standard_package";
-    private static final String ADHELL_STANDARD_PACKAGE = "http://getadhell.com/standard-package.txt";
     private static final String CHECK_PACKAGE_DB = "adhell_packages_filled_db";
 
     @Inject

@@ -22,17 +22,14 @@ import com.fiendfyre.AdHell2.dialogfragment.AdhellTurnOnDialogFragment;
 import com.fiendfyre.AdHell2.dialogfragment.NoInternetConnectionDialogFragment;
 import com.fiendfyre.AdHell2.fragments.AdhellNotSupportedFragment;
 import com.fiendfyre.AdHell2.fragments.AdhellPermissionInfoFragment;
-import com.fiendfyre.AdHell2.fragments.AppSupportFragment;
 import com.fiendfyre.AdHell2.fragments.BlockerFragment;
 import com.fiendfyre.AdHell2.fragments.PackageDisablerFragment;
 import com.fiendfyre.AdHell2.service.BlockedDomainService;
 import com.fiendfyre.AdHell2.utils.AdhellAppIntegrity;
 import com.fiendfyre.AdHell2.utils.DeviceAdminInteractor;
-import com.fiendfyre.AdHell2.viewmodel.SharedBillingViewModel;
 import com.roughike.bottombar.BottomBar;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String ADHELL_STANDARD_PACKAGE = "http://getadhell.com/standard-package.txt";
     private static final String TAG = MainActivity.class.getCanonicalName();
     private static final String BACK_STACK_TAB_TAG = "tab_fragment";
     protected DeviceAdminInteractor mAdminInteractor;
@@ -40,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private AdhellNotSupportedDialogFragment adhellNotSupportedDialogFragment;
     private AdhellTurnOnDialogFragment adhellTurnOnDialogFragment;
     private NoInternetConnectionDialogFragment noInternetConnectionDialogFragment;
-    private SharedBillingViewModel sharedBillingViewModel;
     private BottomBar bottomBar;
 
     @Override
@@ -67,10 +63,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //App.get().getAppComponent().inject(this);
-//        Fabric.with(this, new Answers(), new Crashlytics());
-        //Fabric.with(this, new Answers(), new Crashlytics());
 
         fragmentManager = getSupportFragmentManager();
         mAdminInteractor = DeviceAdminInteractor.getInstance();
@@ -106,18 +98,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         AsyncTask.execute(() -> {
-//        HeartbeatAlarmHelper.scheduleAlarm();
             AdhellAppIntegrity adhellAppIntegrity = new AdhellAppIntegrity();
-//            adhellAppIntegrity.check();
             adhellAppIntegrity.checkDefaultPolicyExists();
             adhellAppIntegrity.checkAdhellStandardPackage();
             adhellAppIntegrity.fillPackageDb();
         });
-        //sharedBillingViewModel = ViewModelProviders.of(this).get(SharedBillingViewModel.class);
-        //sharedBillingViewModel.startBillingConnection();
-        // com.samsung.android.app.spage
-        //sharedBillingViewModel = ViewModelProviders.of(this).get(SharedBillingViewModel.class);
-        //sharedBillingViewModel.startBillingConnection();
     }
 
     @Override
@@ -184,19 +169,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.packageDisablerTab:
                 replacing = new PackageDisablerFragment();
                 break;
-//            case R.id.profilesTab:
-//                replacing = new ProfilesFragment();
-//                break;
             case R.id.appPermissionsTab:
-                /*if (sharedBillingViewModel.billingModel.isPremiumLiveData.getValue()) {
-                    replacing = new AdhellPermissionInfoFragment();
-                } else {
-                    replacing = new OnlyPremiumFragment();
-                }*/
                 replacing = new AdhellPermissionInfoFragment();
                 break;
             default:
-                replacing = new AppSupportFragment();
+                replacing = new BlockerFragment();
         }
 
         fragmentManager.beginTransaction()

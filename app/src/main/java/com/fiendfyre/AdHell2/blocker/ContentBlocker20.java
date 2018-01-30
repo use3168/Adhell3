@@ -11,6 +11,7 @@ import com.fiendfyre.AdHell2.db.entity.BlockUrl;
 import com.fiendfyre.AdHell2.db.entity.BlockUrlProvider;
 import com.fiendfyre.AdHell2.db.entity.UserBlockUrl;
 import com.fiendfyre.AdHell2.db.entity.WhiteUrl;
+import com.fiendfyre.AdHell2.utils.AdhellAppIntegrity;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -107,7 +108,7 @@ public class ContentBlocker20 implements ContentBlocker {
     private List<String> getDenyUrl() {
         Log.d(LOG_TAG, "Entering prepareUrls");
         BlockUrlProvider standardBlockUrlProvider =
-                appDatabase.blockUrlProviderDao().getByUrl(MainActivity.ADHELL_STANDARD_PACKAGE);
+                appDatabase.blockUrlProviderDao().getByUrl(AdhellAppIntegrity.ADHELL_STANDARD_PACKAGE);
         List<BlockUrl> standardList = appDatabase.blockUrlDao().getUrlsByProviderId(standardBlockUrlProvider.id);
         List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
 
