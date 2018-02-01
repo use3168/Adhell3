@@ -62,144 +62,72 @@ public class ContentBlocker56 implements ContentBlocker {
             disableBlocker();
         }
 
-        /*
-        BlockUrlProvider standardBlockUrlProvider =
-                appDatabase.blockUrlProviderDao().getByUrl(MainActivity.ADHELL_STANDARD_PACKAGE);
-        List<BlockUrl> standardList = appDatabase.blockUrlDao().getUrlsByProviderId(standardBlockUrlProvider.id);
-        */
-
-        Set<BlockUrl> finalBlockList = new HashSet<>();
-        //finalBlockList.addAll(standardList);
-        List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
-
-        for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
-            /*
-            if (blockUrlProvider.url.equals(MainActivity.ADHELL_STANDARD_PACKAGE)) {
-                continue;
-            }
-            */
-            Log.i(TAG, "Included url provider: " + blockUrlProvider.url);
-            List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
-            if (finalBlockList.size() + blockUrls.size() <= this.urlBlockLimit - 100) {
-                finalBlockList.addAll(blockUrls);
-            } else {
-                int remain = this.urlBlockLimit - finalBlockList.size();
-                if (remain < blockUrls.size()) {
-                    blockUrls = blockUrls.subList(0, remain);
-                }
-                finalBlockList.addAll(blockUrls);
-                break;
-            }
-        }
         List<WhiteUrl> whiteUrls = appDatabase.whiteUrlDao().getAll2();
-
         List<String> whiteUrlsString = new ArrayList<>();
         for (WhiteUrl whiteUrl : whiteUrls) {
             whiteUrlsString.add(whiteUrl.url);
         }
 
         List<String> denyList = new ArrayList<>();
+        List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
+        for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
+            Log.i(TAG, "Included url provider: " + blockUrlProvider.url);
+            List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
 
-        for (BlockUrl blockUrl : finalBlockList) {
-
-            /*
-            if (Patterns.WEB_URL.matcher(blockUrl.url).matches()) {
+            for (BlockUrl blockUrl : blockUrls) {
                 if (whiteUrlsString.contains(blockUrl.url)) {
                     continue;
                 }
-                denyList.add("*" + blockUrl.url + "*");
-            }
-            */
-
-            if (whiteUrlsString.contains(blockUrl.url)) {
-                continue;
-            }
-
-            // If a wildcard entry is passed, bypass current URL filter
-            if(blockUrl.url.contains("*"))
-            {
-                Log.d(TAG, "Wildcard detected --> " + blockUrl.url + " requires validation.");
-
-                // Check the wildcard is valid
-                boolean validWildcard = BlockUrlPatternsMatch.wildcardValid(blockUrl.url);
-
-                // If it isn't valid, skip it
-                if(!validWildcard)
-                {
-                    Log.d(TAG, blockUrl.url + " is not a valid wildcard.");
-                    continue;
+                if (denyList.size() > urlBlockLimit) {
+                    break;
                 }
 
-                Log.d(TAG, "Wildcard verified.");
-
-                final String urlReady = blockUrl.url;
-
-                denyList.add(urlReady);
-            }
-            else
-            {
-                // Let's remove the unnecessary www, www1 etc.
-                blockUrl.url = blockUrl.url.replaceAll("^(www)([0-9]{0,3})?(\\.)", "");
-
-                // Check that the domain is valid
-                boolean validDomain = BlockUrlPatternsMatch.domainValid(blockUrl.url);
-
-                // If it isn't valid, skip it
-                if(!validDomain)
-                {
-                    Log.d(TAG, "Invalid Domain: " + blockUrl.url);
-                    continue;
+                // If a wildcard entry is passed, bypass current URL filter
+                if (blockUrl.url.contains("*")) {
+                    Log.d(TAG, "Wildcard detected --> " + blockUrl.url + " requires validation.");
+                    boolean validWildcard = BlockUrlPatternsMatch.wildcardValid(blockUrl.url);
+                    if (!validWildcard) {
+                        Log.d(TAG, blockUrl.url + " is not a valid wildcard.");
+                        continue;
+                    }
+                    denyList.add(blockUrl.url);
+                } else {
+                    // Let's remove the unnecessary www, www1 etc.
+                    blockUrl.url = blockUrl.url.replaceAll("^(www)([0-9]{0,3})?(\\.)", "");
+                    boolean validDomain = BlockUrlPatternsMatch.domainValid(blockUrl.url);
+                    if (!validDomain) {
+                        Log.d(TAG, "Invalid Domain: " + blockUrl.url);
+                        continue;
+                    }
+                    denyList.add("*" + blockUrl.url);
                 }
-
-                final String urlReady = "*" + blockUrl.url;
-
-                denyList.add(urlReady);
             }
-            /*
-            // If it a wildcard isn't detected, let's use AdHell's original processing.
-            else if (Patterns.WEB_URL.matcher(blockUrl.url).matches())
-            {
-                final String urlReady = "*" + blockUrl.url;
-
-                Log.d(TAG, "Adding rule: " + urlReady);
-
-                denyList.add(urlReady);
-            }
-            */
-
         }
 
         List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
-
         if (userBlockUrls != null && userBlockUrls.size() > 0) {
             Log.i(TAG, "UserBlockUrls size: " + userBlockUrls.size());
             for (UserBlockUrl userBlockUrl : userBlockUrls) {
-                /*
                 if (Patterns.WEB_URL.matcher(userBlockUrl.url).matches()) {
-                    denyList.add("*" + userBlockUrl.url + "*");
-                    Log.i(TAG, "UserBlockUrl: " + userBlockUrl.url);
-                }
-                */
-
-                if (Patterns.WEB_URL.matcher(userBlockUrl.url).matches()) {
-
                     final String urlReady = "*" + userBlockUrl.url + "*";
-
                     denyList.add(urlReady);
-
                     Log.i(TAG, "UserBlockUrl: " + urlReady);
                 }
-
             }
         } else {
             Log.i(TAG, "UserBlockUrls is empty.");
         }
 
-        Log.d(TAG, "Number of block list: " + denyList.size());
-        List<String> allowList = new ArrayList<>();
+        Log.d(TAG, "Number of url block list: " + denyList.size());
+        if (denyList.size() > urlBlockLimit) {
+            Log.d(TAG, "Number of url block list exceeds limit, reducing to " + urlBlockLimit);
+            denyList = denyList.subList(0, urlBlockLimit);
+        }
+
         List<DomainFilterRule> rules = new ArrayList<>();
         AppIdentity appIdentity = new AppIdentity("*", null);
-        rules.add(new DomainFilterRule(appIdentity, denyList, allowList));
+        rules.add(new DomainFilterRule(appIdentity, denyList, new ArrayList<>()));
+
         List<String> superAllow = new ArrayList<>();
         superAllow.add("*");
         List<AppInfo> appInfos = appDatabase.applicationInfoDao().getWhitelistedApps();
@@ -215,11 +143,7 @@ public class ContentBlocker56 implements ContentBlocker {
              */
 
             Log.d(TAG, "Adding: DENY PORT 53");
-
-            // Number of rules
-            int numRules = 2;
-            // Declare new firewall rule variable
-            FirewallRule[] portRules = new FirewallRule[numRules];
+            FirewallRule[] portRules = new FirewallRule[2];
 
             // Add deny rules for DNS port (53)
             portRules[0] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV4);
@@ -232,15 +156,11 @@ public class ContentBlocker56 implements ContentBlocker {
 
             // Send rules to the firewall
             FirewallResponse[] response = mFirewall.addRules(portRules);
-
-            // Define bitmask
-            int bitmask = (Firewall.FIREWALL_ALLOW_RULE | Firewall.FIREWALL_DENY_RULE);
-
-            // Query firewall for IP rules
-            FirewallRule[] allowAndDenyRules = mFirewall.getRules(bitmask, null);
-
-            // Output to log
-            Log.d(TAG,"Firewall IP Rules:" + Arrays.toString(allowAndDenyRules));
+            if (FirewallResponse.Result.SUCCESS == response[0].getResult()) {
+                Log.i(TAG, "Port rules have been added: " + response[0].getMessage());
+            } else {
+                Log.i(TAG, "Failed to add port rules: " + response[0].getMessage());
+            }
         }
         catch (SecurityException ex)
         {
