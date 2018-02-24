@@ -14,7 +14,7 @@ public class BlockUrlPatternsMatch {
     public static boolean wildcardValid (String domain){
 
         // Wildcard pattern to match
-        String wildcardPattern = "(?i)^([\\*]?)([A-Z0-9-_.]+)([\\*]?)$";
+        String wildcardPattern = "(?i)^([*])([A-Z0-9-_.]+)$|^([A-Z0-9-_.]+)([*])$|^([*])([A-Z0-9-_.]+)([*])$";
 
         // Create a pattern object
         Pattern r = Pattern.compile(wildcardPattern);
