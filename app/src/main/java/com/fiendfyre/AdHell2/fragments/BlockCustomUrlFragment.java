@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.fiendfyre.AdHell2.R;
 import com.fiendfyre.AdHell2.db.AppDatabase;
 import com.fiendfyre.AdHell2.db.entity.UserBlockUrl;
+import com.fiendfyre.AdHell2.utils.BlockUrlPatternsMatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public class BlockCustomUrlFragment extends LifecycleFragment {
         Button addCustomBlockedUrlButton = (Button) view.findViewById(R.id.addCustomBlockedUrlButton);
         addCustomBlockedUrlButton.setOnClickListener(v -> {
             String urlToAdd = addBlockedUrlEditText.getText().toString().trim().toLowerCase();
-            if (!Patterns.WEB_URL.matcher(urlToAdd).matches()) {
+            if (!BlockUrlPatternsMatch.isUrlValid(urlToAdd)) {
                 Toast.makeText(context, "Url not valid. Please check", Toast.LENGTH_SHORT).show();
                 return;
             }

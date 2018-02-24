@@ -63,9 +63,13 @@ public class ContentBlocker56 implements ContentBlocker {
         }
 
         List<WhiteUrl> whiteUrls = appDatabase.whiteUrlDao().getAll2();
-        List<String> whiteUrlsString = new ArrayList<>();
+        List<String> whiteList = new ArrayList<>();
         for (WhiteUrl whiteUrl : whiteUrls) {
-            whiteUrlsString.add(whiteUrl.url);
+            if (BlockUrlPatternsMatch.isUrlValid(whiteUrl.url)) {
+                final String url = BlockUrlPatternsMatch.getValidatedUrl(whiteUrl.url);
+                whiteList.add(url);
+                Log.i(TAG, "WhiteUrl: " + url);
+            }
         }
 
         List<String> denyList = new ArrayList<>();
@@ -75,32 +79,19 @@ public class ContentBlocker56 implements ContentBlocker {
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
 
             for (BlockUrl blockUrl : blockUrls) {
-                if (whiteUrlsString.contains(blockUrl.url)) {
+                if (whiteList.contains(blockUrl.url)) {
                     continue;
                 }
                 if (denyList.size() > urlBlockLimit) {
                     break;
                 }
 
-                // If a wildcard entry is passed, bypass current URL filter
-                if (blockUrl.url.contains("*")) {
-                    Log.d(TAG, "Wildcard detected --> " + blockUrl.url + " requires validation.");
-                    boolean validWildcard = BlockUrlPatternsMatch.wildcardValid(blockUrl.url);
-                    if (!validWildcard) {
-                        Log.d(TAG, blockUrl.url + " is not a valid wildcard.");
-                        continue;
-                    }
-                    denyList.add(blockUrl.url);
-                } else {
-                    // Let's remove the unnecessary www, www1 etc.
-                    blockUrl.url = blockUrl.url.replaceAll("^(www)([0-9]{0,3})?(\\.)", "");
-                    boolean validDomain = BlockUrlPatternsMatch.domainValid(blockUrl.url);
-                    if (!validDomain) {
-                        Log.d(TAG, "Invalid Domain: " + blockUrl.url);
-                        continue;
-                    }
-                    denyList.add("*" + blockUrl.url);
+                boolean validUrl = BlockUrlPatternsMatch.isUrlValid(blockUrl.url);
+                if (!validUrl) {
+                    Log.d(TAG, "Invalid URL: " + blockUrl.url);
+                    continue;
                 }
+                denyList.add(BlockUrlPatternsMatch.getValidatedUrl(blockUrl.url));
             }
         }
 
@@ -108,10 +99,10 @@ public class ContentBlocker56 implements ContentBlocker {
         if (userBlockUrls != null && userBlockUrls.size() > 0) {
             Log.i(TAG, "UserBlockUrls size: " + userBlockUrls.size());
             for (UserBlockUrl userBlockUrl : userBlockUrls) {
-                if (Patterns.WEB_URL.matcher(userBlockUrl.url).matches()) {
-                    final String urlReady = "*" + userBlockUrl.url + "*";
-                    denyList.add(urlReady);
-                    Log.i(TAG, "UserBlockUrl: " + urlReady);
+                if (BlockUrlPatternsMatch.isUrlValid(userBlockUrl.url)) {
+                    final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
+                    denyList.add(url);
+                    Log.i(TAG, "UserBlockUrl: " + url);
                 }
             }
         } else {

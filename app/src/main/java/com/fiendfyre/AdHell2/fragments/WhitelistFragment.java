@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.fiendfyre.AdHell2.R;
 import com.fiendfyre.AdHell2.db.AppDatabase;
 import com.fiendfyre.AdHell2.db.entity.WhiteUrl;
+import com.fiendfyre.AdHell2.utils.BlockUrlPatternsMatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public class WhitelistFragment extends LifecycleFragment {
         });
         addWhitelistUrl.setOnClickListener(v -> {
             String urlToAdd = whitelistUrlEditText.getText().toString();
-            if (!Patterns.WEB_URL.matcher(urlToAdd).matches()) {
+            if (!BlockUrlPatternsMatch.isUrlValid(urlToAdd)) {
                 Toast.makeText(this.getContext(), "Url not valid. Please check", Toast.LENGTH_SHORT).show();
                 return;
             }
