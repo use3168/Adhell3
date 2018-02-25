@@ -39,7 +39,6 @@ public class ContentBlocker57 implements ContentBlocker {
 
     @Override
     public boolean enableBlocker() {
-        contentBlocker56.setUrlBlockLimit(15_000);
         if (contentBlocker56.enableBlocker()) {
             SharedPreferences sharedPreferences = App.get().getApplicationContext().getSharedPreferences("dnsAddresses", Context.MODE_PRIVATE);
             if (sharedPreferences.contains("dns1") && sharedPreferences.contains("dns2")) {

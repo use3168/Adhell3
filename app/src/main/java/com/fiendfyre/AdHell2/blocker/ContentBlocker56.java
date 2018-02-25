@@ -2,16 +2,15 @@ package com.fiendfyre.AdHell2.blocker;
 
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.Patterns;
 
 import com.fiendfyre.AdHell2.App;
-import com.fiendfyre.AdHell2.MainActivity;
 import com.fiendfyre.AdHell2.db.AppDatabase;
 import com.fiendfyre.AdHell2.db.entity.AppInfo;
 import com.fiendfyre.AdHell2.db.entity.BlockUrl;
 import com.fiendfyre.AdHell2.db.entity.BlockUrlProvider;
 import com.fiendfyre.AdHell2.db.entity.UserBlockUrl;
 import com.fiendfyre.AdHell2.db.entity.WhiteUrl;
+import com.fiendfyre.AdHell2.utils.AdhellAppIntegrity;
 import com.fiendfyre.AdHell2.utils.BlockUrlPatternsMatch;
 import com.sec.enterprise.AppIdentity;
 import com.sec.enterprise.firewall.DomainFilterRule;
@@ -20,10 +19,7 @@ import com.sec.enterprise.firewall.FirewallResponse;
 import com.sec.enterprise.firewall.FirewallRule;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -36,7 +32,6 @@ public class ContentBlocker56 implements ContentBlocker {
     Firewall mFirewall;
     @Inject
     AppDatabase appDatabase;
-    private int urlBlockLimit = 2700;
 
     private ContentBlocker56() {
         App.get().getAppComponent().inject(this);
@@ -74,6 +69,7 @@ public class ContentBlocker56 implements ContentBlocker {
 
         List<String> denyList = new ArrayList<>();
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
+        int urlBlockLimit = AdhellAppIntegrity.BLOCK_URL_LIMIT;
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
             Log.i(TAG, "Included url provider: " + blockUrlProvider.url);
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
@@ -210,10 +206,6 @@ public class ContentBlocker56 implements ContentBlocker {
     @Override
     public boolean isEnabled() {
         return mFirewall.isFirewallEnabled();
-    }
-
-    public void setUrlBlockLimit(int urlBlockLimit) {
-        this.urlBlockLimit = urlBlockLimit;
     }
 
 }
