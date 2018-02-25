@@ -71,8 +71,19 @@ public class ContentBlocker56 implements ContentBlocker {
         }
         Log.i(TAG, "White list size: " + whiteList.size());
 
-        // Process all block URL providers into deny list
+        // Process user-defined blocked URLs
         Set<String> denyList = new HashSet<>();
+        List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
+        for (UserBlockUrl userBlockUrl : userBlockUrls) {
+            if (BlockUrlPatternsMatch.isUrlValid(userBlockUrl.url)) {
+                final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
+                denyList.add(url);
+                Log.i(TAG, "UserBlockUrl: " + url);
+            }
+        }
+        Log.i(TAG, "User blocked URL size: " + userBlockUrls.size());
+
+        // Process all block URL providers into deny list
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
         int urlBlockLimit = AdhellAppIntegrity.BLOCK_URL_LIMIT;
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
@@ -90,25 +101,6 @@ public class ContentBlocker56 implements ContentBlocker {
             }
         }
         Log.i(TAG, "Deny list size: " + denyList.size());
-
-        // Process user-defined blocked URLs
-        if (denyList.size() < urlBlockLimit) {
-            List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
-            if (userBlockUrls != null && userBlockUrls.size() > 0) {
-                Log.i(TAG, "UserBlockUrls size: " + userBlockUrls.size());
-                for (UserBlockUrl userBlockUrl : userBlockUrls) {
-                    if (BlockUrlPatternsMatch.isUrlValid(userBlockUrl.url)) {
-                        final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
-                        denyList.add(url);
-                        Log.i(TAG, "UserBlockUrl: " + url);
-                    }
-                }
-            } else {
-                Log.i(TAG, "UserBlockUrls is empty.");
-            }
-        } else {
-            Log.i(TAG, "UserBlockUrls cannot be added: The number of blocked URLs has reached the limit!");
-        }
 
         // Create domain filter rule with deny and white list
         List<DomainFilterRule> rules = new ArrayList<>();
