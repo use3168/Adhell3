@@ -75,9 +75,6 @@ public class ContentBlocker56 implements ContentBlocker {
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
 
             for (BlockUrl blockUrl : blockUrls) {
-                if (whiteList.contains(blockUrl.url)) {
-                    continue;
-                }
                 if (denyList.size() > urlBlockLimit) {
                     break;
                 }
@@ -113,7 +110,7 @@ public class ContentBlocker56 implements ContentBlocker {
 
         List<DomainFilterRule> rules = new ArrayList<>();
         AppIdentity appIdentity = new AppIdentity("*", null);
-        rules.add(new DomainFilterRule(appIdentity, denyList, new ArrayList<>()));
+        rules.add(new DomainFilterRule(appIdentity, denyList, whiteList));
 
         List<String> superAllow = new ArrayList<>();
         superAllow.add("*");
