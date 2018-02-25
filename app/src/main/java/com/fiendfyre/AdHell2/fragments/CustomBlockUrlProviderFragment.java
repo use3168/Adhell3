@@ -69,6 +69,8 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
                         mDb.blockUrlDao().insertAll(blockUrls);
                     } catch (IOException e) {
                         Log.e(TAG, "Failed to fetch url from urlProvider", e);
+                    } catch (IllegalArgumentException ie) {
+                        Log.e(TAG, ie.getMessage());
                     }
                 }
                 return null;
@@ -100,7 +102,11 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
                         // Save urls from providers
                         mDb.blockUrlDao().insertAll(blockUrls);
                     } catch (IOException e) {
+                        mDb.blockUrlProviderDao().delete(blockUrlProvider);
                         Log.e(TAG, "Failed to download links from urlproviders", e);
+                    } catch (IllegalArgumentException ie) {
+                        mDb.blockUrlProviderDao().delete(blockUrlProvider);
+                        Log.e(TAG, ie.getMessage());
                     }
 
                     return null;

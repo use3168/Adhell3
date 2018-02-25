@@ -13,7 +13,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BlockUrlUtils {
     private static final String TAG = BlockUrlUtils.class.getCanonicalName();
@@ -23,10 +25,9 @@ public class BlockUrlUtils {
         URL urlProviderUrl = new URL(blockUrlProvider.url);
         URLConnection connection = urlProviderUrl.openConnection();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        List<BlockUrl> blockUrls = new ArrayList<>();
+        Set<BlockUrl> blockUrls = new HashSet<>();
         String inputLine;
         while ((inputLine = bufferedReader.readLine()) != null) {
-            Log.d(TAG, "Url: " + inputLine);
             inputLine = inputLine
                     .replace("127.0.0.1", "")
                     .replace("0.0.0.0", "")
@@ -37,12 +38,21 @@ public class BlockUrlUtils {
                 inputLine = inputLine.substring(0, hIndex).trim();
             }
 
+            if (blockUrls.size() > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
+                throw new IllegalArgumentException("The URL provider contains more than " +
+                        AdhellAppIntegrity.BLOCK_URL_LIMIT + " domains.");
+            }
+
             if (URLUtil.isValidUrl("http://" + inputLine)) {
-                BlockUrl blockUrl = new BlockUrl(inputLine, blockUrlProvider.id);
-                blockUrls.add(blockUrl);
+                if (BlockUrlPatternsMatch.isUrlValid(inputLine)) {
+                    BlockUrl blockUrl = new BlockUrl(inputLine, blockUrlProvider.id);
+                    blockUrls.add(blockUrl);
+                } else {
+                    Log.d(TAG, "Invalid URL: " + inputLine);
+                }
             }
         }
         bufferedReader.close();
-        return blockUrls;
+        return new ArrayList<>(blockUrls);
     }
 }

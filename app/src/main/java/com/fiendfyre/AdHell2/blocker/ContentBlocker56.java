@@ -78,17 +78,14 @@ public class ContentBlocker56 implements ContentBlocker {
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
             Log.i(TAG, "Included url provider: " + blockUrlProvider.url);
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
+            if (denyList.size() + blockUrls.size() > urlBlockLimit) {
+                Log.i(TAG, "Total number of blocked URLs has reached limit! " +
+                        "Deny list size: " + denyList.size() + ", " +
+                        "Current URL provider size: " + blockUrls.size());
+                break;
+            }
 
             for (BlockUrl blockUrl : blockUrls) {
-                if (denyList.size() > urlBlockLimit) {
-                    break;
-                }
-
-                boolean validUrl = BlockUrlPatternsMatch.isUrlValid(blockUrl.url);
-                if (!validUrl) {
-                    Log.d(TAG, "Invalid URL: " + blockUrl.url);
-                    continue;
-                }
                 denyList.add(BlockUrlPatternsMatch.getValidatedUrl(blockUrl.url));
             }
         }

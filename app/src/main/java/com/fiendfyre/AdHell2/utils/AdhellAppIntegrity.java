@@ -225,6 +225,8 @@ public class AdhellAppIntegrity {
             appDatabase.blockUrlDao().insertAll(blockUrls);
         } catch (IOException e) {
             Log.e(TAG, "Failed to download urls", e);
+        } catch (IllegalArgumentException ie) {
+            Log.e(TAG, ie.getMessage());
         }
     }
 
