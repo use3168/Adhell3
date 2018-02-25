@@ -19,7 +19,9 @@ import com.sec.enterprise.firewall.FirewallResponse;
 import com.sec.enterprise.firewall.FirewallRule;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -57,8 +59,9 @@ public class ContentBlocker56 implements ContentBlocker {
             disableBlocker();
         }
 
+        // Process user-defined white list
         List<WhiteUrl> whiteUrls = appDatabase.whiteUrlDao().getAll2();
-        List<String> whiteList = new ArrayList<>();
+        Set<String> whiteList = new HashSet<>();
         for (WhiteUrl whiteUrl : whiteUrls) {
             if (BlockUrlPatternsMatch.isUrlValid(whiteUrl.url)) {
                 final String url = BlockUrlPatternsMatch.getValidatedUrl(whiteUrl.url);
@@ -66,8 +69,10 @@ public class ContentBlocker56 implements ContentBlocker {
                 Log.i(TAG, "WhiteUrl: " + url);
             }
         }
+        Log.i(TAG, "White list size: " + whiteList.size());
 
-        List<String> denyList = new ArrayList<>();
+        // Process all block URL providers into deny list
+        Set<String> denyList = new HashSet<>();
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
         int urlBlockLimit = AdhellAppIntegrity.BLOCK_URL_LIMIT;
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
@@ -87,31 +92,33 @@ public class ContentBlocker56 implements ContentBlocker {
                 denyList.add(BlockUrlPatternsMatch.getValidatedUrl(blockUrl.url));
             }
         }
+        Log.i(TAG, "Deny list size: " + denyList.size());
 
-        List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
-        if (userBlockUrls != null && userBlockUrls.size() > 0) {
-            Log.i(TAG, "UserBlockUrls size: " + userBlockUrls.size());
-            for (UserBlockUrl userBlockUrl : userBlockUrls) {
-                if (BlockUrlPatternsMatch.isUrlValid(userBlockUrl.url)) {
-                    final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
-                    denyList.add(url);
-                    Log.i(TAG, "UserBlockUrl: " + url);
+        // Process user-defined blocked URLs
+        if (denyList.size() < urlBlockLimit) {
+            List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
+            if (userBlockUrls != null && userBlockUrls.size() > 0) {
+                Log.i(TAG, "UserBlockUrls size: " + userBlockUrls.size());
+                for (UserBlockUrl userBlockUrl : userBlockUrls) {
+                    if (BlockUrlPatternsMatch.isUrlValid(userBlockUrl.url)) {
+                        final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
+                        denyList.add(url);
+                        Log.i(TAG, "UserBlockUrl: " + url);
+                    }
                 }
+            } else {
+                Log.i(TAG, "UserBlockUrls is empty.");
             }
         } else {
-            Log.i(TAG, "UserBlockUrls is empty.");
+            Log.i(TAG, "UserBlockUrls cannot be added: The number of blocked URLs has reached the limit!");
         }
 
-        Log.d(TAG, "Number of url block list: " + denyList.size());
-        if (denyList.size() > urlBlockLimit) {
-            Log.d(TAG, "Number of url block list exceeds limit, reducing to " + urlBlockLimit);
-            denyList = denyList.subList(0, urlBlockLimit);
-        }
-
+        // Create domain filter rule with deny and white list
         List<DomainFilterRule> rules = new ArrayList<>();
         AppIdentity appIdentity = new AppIdentity("*", null);
-        rules.add(new DomainFilterRule(appIdentity, denyList, whiteList));
+        rules.add(new DomainFilterRule(appIdentity, new ArrayList<>(denyList), new ArrayList<>(whiteList)));
 
+        // Create domain filter rule for white listed apps
         List<String> superAllow = new ArrayList<>();
         superAllow.add("*");
         List<AppInfo> appInfos = appDatabase.applicationInfoDao().getWhitelistedApps();
@@ -121,11 +128,9 @@ public class ContentBlocker56 implements ContentBlocker {
             rules.add(new DomainFilterRule(new AppIdentity(app.packageName, null), new ArrayList<>(), superAllow));
         }
 
+        // Create firewall rule for blocking port 53 and add it to Knox Firewall
+        // It is necessary for Chrome
         try {
-            /* Try to block Port 53
-               This is now necessary for Chrome
-             */
-
             Log.d(TAG, "Adding: DENY PORT 53");
             FirewallRule[] portRules = new FirewallRule[2];
 
@@ -152,6 +157,7 @@ public class ContentBlocker56 implements ContentBlocker {
             return false;
         }
 
+        // Add domain filter rule to Knox Firewall
         try {
             Log.d(TAG, "Adding: DENY DOMAINS");
             FirewallResponse[] response = mFirewall.addDomainFilterRules(rules);
