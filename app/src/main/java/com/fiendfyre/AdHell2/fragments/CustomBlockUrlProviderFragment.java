@@ -24,7 +24,6 @@ import com.fiendfyre.AdHell2.db.entity.BlockUrlProvider;
 import com.fiendfyre.AdHell2.utils.BlockUrlUtils;
 import com.fiendfyre.AdHell2.viewmodel.BlockUrlProvidersViewModel;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -67,10 +66,8 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
                         blockUrlProvider.lastUpdated = new Date();
                         mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider);
                         mDb.blockUrlDao().insertAll(blockUrls);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to fetch url from urlProvider", e);
-                    } catch (IllegalArgumentException ie) {
-                        Log.e(TAG, ie.getMessage());
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage(), e);
                     }
                 }
                 return null;
@@ -83,10 +80,10 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
         addBlockUrlProviderButton.setOnClickListener(v -> {
             String urlProvider = blockUrlProviderEditText.getText().toString();
             // Check if normal url
-            if (!urlProvider.isEmpty() && Patterns.WEB_URL.matcher(urlProvider).matches()) {
+            if (URLUtil.isValidUrl(urlProvider)) {
                 Maybe.fromCallable(() -> {
                     BlockUrlProvider blockUrlProvider = new BlockUrlProvider();
-                    blockUrlProvider.url = (URLUtil.isValidUrl(urlProvider)) ? urlProvider : "http://" + urlProvider;
+                    blockUrlProvider.url = urlProvider;
                     blockUrlProvider.count = 0;
                     blockUrlProvider.deletable = true;
                     blockUrlProvider.lastUpdated = new Date();
@@ -101,12 +98,9 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
                         mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider);
                         // Save urls from providers
                         mDb.blockUrlDao().insertAll(blockUrls);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         mDb.blockUrlProviderDao().delete(blockUrlProvider);
-                        Log.e(TAG, "Failed to download links from urlproviders", e);
-                    } catch (IllegalArgumentException ie) {
-                        mDb.blockUrlProviderDao().delete(blockUrlProvider);
-                        Log.e(TAG, ie.getMessage());
+                        Log.e(TAG, e.getMessage(), e);
                     }
 
                     return null;

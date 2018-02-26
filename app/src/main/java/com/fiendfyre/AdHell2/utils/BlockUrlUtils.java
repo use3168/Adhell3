@@ -8,8 +8,12 @@ import com.fiendfyre.AdHell2.db.entity.BlockUrl;
 import com.fiendfyre.AdHell2.db.entity.BlockUrlProvider;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -21,10 +25,17 @@ public class BlockUrlUtils {
     private static final String TAG = BlockUrlUtils.class.getCanonicalName();
 
     @NonNull
-    public static List<BlockUrl> loadBlockUrls(BlockUrlProvider blockUrlProvider) throws IOException {
-        URL urlProviderUrl = new URL(blockUrlProvider.url);
-        URLConnection connection = urlProviderUrl.openConnection();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    public static List<BlockUrl> loadBlockUrls(BlockUrlProvider blockUrlProvider) throws IOException, URISyntaxException {
+        BufferedReader bufferedReader;
+        if (URLUtil.isFileUrl(blockUrlProvider.url)) {
+            File file = new File(new URI(blockUrlProvider.url));
+            bufferedReader = new BufferedReader(new FileReader(file));
+        } else {
+            URL urlProviderUrl = new URL(blockUrlProvider.url);
+            URLConnection connection = urlProviderUrl.openConnection();
+            bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        }
+
         Set<BlockUrl> blockUrls = new HashSet<>();
         String inputLine;
         while ((inputLine = bufferedReader.readLine()) != null) {
@@ -34,6 +45,7 @@ public class BlockUrlUtils {
                     .toLowerCase();
 
             if (blockUrls.size() > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
+                bufferedReader.close();
                 throw new IllegalArgumentException("The URL provider contains more than " +
                         AdhellAppIntegrity.BLOCK_URL_LIMIT + " domains.");
             }

@@ -17,7 +17,6 @@ import com.fiendfyre.AdHell2.db.entity.DisabledPackage;
 import com.fiendfyre.AdHell2.db.entity.FirewallWhitelistedPackage;
 import com.fiendfyre.AdHell2.db.entity.PolicyPackage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -223,10 +222,8 @@ public class AdhellAppIntegrity {
             appDatabase.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider);
             // Save urls from providers
             appDatabase.blockUrlDao().insertAll(blockUrls);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to download urls", e);
-        } catch (IllegalArgumentException ie) {
-            Log.e(TAG, ie.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
