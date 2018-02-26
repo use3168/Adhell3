@@ -3,54 +3,44 @@ package com.fiendfyre.AdHell2.utils;
 /**
  * Created by Matt on 19/01/2018.
  */
-import android.util.Log;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BlockUrlPatternsMatch {
+public final class BlockUrlPatternsMatch {
 
-    private static boolean wildcardValid (String domain){
+    private static final String WILDCARD_PATTERN = "(?i)^([*])([A-Z0-9-_.]+)$|^([A-Z0-9-_.]+)([*])$|^([*])([A-Z0-9-_.]+)([*])$";
+    private static final Pattern wilcard_r = Pattern.compile(WILDCARD_PATTERN);
 
-        // Wildcard pattern to match
-        String wildcardPattern = "(?i)^([*])([A-Z0-9-_.]+)$|^([A-Z0-9-_.]+)([*])$|^([*])([A-Z0-9-_.]+)([*])$";
+    private static final String DOMAIN_PATTERN = "(?i)(?=^.{4,253}$)(^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,63}$)";
+    private static final Pattern domain_r = Pattern.compile(DOMAIN_PATTERN);
 
-        // Create a pattern object
-        Pattern r = Pattern.compile(wildcardPattern);
+    private BlockUrlPatternsMatch() {
+    }
 
-        // Create a matcher object
-        Matcher m = r.matcher(domain);
-
-        // True or false
-        boolean matchResult = m.matches();
-
-        return matchResult;
+    private static boolean wildcardValid (String domain) {
+        return wilcard_r.matcher(domain).matches();
     }
 
     private static boolean domainValid (String domain){
+        return domain_r.matcher(domain).matches();
+    }
 
-        // Domain pattern to match
-        String domainPattern = "(?i)(?=^.{4,253}$)(^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,63}$)";
+    private static String normalizeUrl(String url) {
+        return url
 
-        // Create a pattern object
-        Pattern r = Pattern.compile(domainPattern);
+        // Remove 'deadzone' - We only want the domain
+        .replace("127.0.0.1", "")
+        .replace("0.0.0.0", "")
 
-        // Create a matcher object
-        Matcher m = r.matcher(domain);
-
-        // True or false
-        boolean matchResult = m.matches();
-
-        return matchResult;
+        // Let's remove the unnecessary www, www1 etc.
+        .replaceAll("^(www)([0-9]{0,3})?(\\.)", "");
     }
 
     public static boolean isUrlValid(String url) {
+        url = normalizeUrl(url);
         if (url.contains("*")) {
             return BlockUrlPatternsMatch.wildcardValid(url);
         }
-
-        // Let's remove the unnecessary www, www1 etc.
-        url = url.replaceAll("^(www)([0-9]{0,3})?(\\.)", "");
         return BlockUrlPatternsMatch.domainValid(url);
     }
 

@@ -29,14 +29,9 @@ public class BlockUrlUtils {
         String inputLine;
         while ((inputLine = bufferedReader.readLine()) != null) {
             inputLine = inputLine
-                    .replace("127.0.0.1", "")
-                    .replace("0.0.0.0", "")
-                    .trim()
+                    .replaceAll("\\s","") // Remove whitespace
+                    .replaceAll("(#.*)|((\\s)+#.*)","") // Remove comments
                     .toLowerCase();
-            int hIndex = inputLine.indexOf("#");
-            if (hIndex != -1) {
-                inputLine = inputLine.substring(0, hIndex).trim();
-            }
 
             if (blockUrls.size() > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
                 throw new IllegalArgumentException("The URL provider contains more than " +
