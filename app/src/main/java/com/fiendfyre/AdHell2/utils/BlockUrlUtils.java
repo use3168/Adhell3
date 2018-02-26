@@ -50,13 +50,11 @@ public class BlockUrlUtils {
                         AdhellAppIntegrity.BLOCK_URL_LIMIT + " domains.");
             }
 
-            if (URLUtil.isValidUrl("http://" + inputLine)) {
-                if (BlockUrlPatternsMatch.isUrlValid(inputLine)) {
-                    BlockUrl blockUrl = new BlockUrl(inputLine, blockUrlProvider.id);
-                    blockUrls.add(blockUrl);
-                } else {
-                    Log.d(TAG, "Invalid URL: " + inputLine);
-                }
+            if (BlockUrlPatternsMatch.isUrlValid(inputLine)) {
+                BlockUrl blockUrl = new BlockUrl(inputLine, blockUrlProvider.id);
+                blockUrls.add(blockUrl);
+            } else {
+                Log.d(TAG, "Invalid URL: " + inputLine);
             }
         }
         bufferedReader.close();

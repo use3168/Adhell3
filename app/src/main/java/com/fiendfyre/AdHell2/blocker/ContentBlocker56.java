@@ -63,11 +63,9 @@ public class ContentBlocker56 implements ContentBlocker {
         List<WhiteUrl> whiteUrls = appDatabase.whiteUrlDao().getAll2();
         Set<String> whiteList = new HashSet<>();
         for (WhiteUrl whiteUrl : whiteUrls) {
-            if (BlockUrlPatternsMatch.isUrlValid(whiteUrl.url)) {
-                final String url = BlockUrlPatternsMatch.getValidatedUrl(whiteUrl.url);
-                whiteList.add(url);
-                Log.i(TAG, "WhiteUrl: " + url);
-            }
+            final String url = BlockUrlPatternsMatch.getValidatedUrl(whiteUrl.url);
+            whiteList.add(url);
+            Log.i(TAG, "WhiteUrl: " + url);
         }
         Log.i(TAG, "White list size: " + whiteList.size());
 
@@ -75,11 +73,9 @@ public class ContentBlocker56 implements ContentBlocker {
         Set<String> denyList = new HashSet<>();
         List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
         for (UserBlockUrl userBlockUrl : userBlockUrls) {
-            if (BlockUrlPatternsMatch.isUrlValid(userBlockUrl.url)) {
-                final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
-                denyList.add(url);
-                Log.i(TAG, "UserBlockUrl: " + url);
-            }
+            final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
+            denyList.add(url);
+            Log.i(TAG, "UserBlockUrl: " + url);
         }
         Log.i(TAG, "User blocked URL size: " + userBlockUrls.size());
 
