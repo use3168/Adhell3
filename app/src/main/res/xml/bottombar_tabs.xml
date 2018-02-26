@@ -8,6 +8,10 @@
         id="@+id/packageDisablerTab"
         title="@string/package_disabler_bottombar_title"/>
     <tab
+        icon="@drawable/ic_report"
+        id="@+id/mobileRestricterTab"
+        title="@string/mobile_restricter_bottombar_title"/>
+    <tab
         icon="@drawable/ic_lock_outline"
         id="@+id/appPermissionsTab"
         title="@string/app_permissions_tab_title"/>

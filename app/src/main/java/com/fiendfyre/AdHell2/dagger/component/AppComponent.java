@@ -10,6 +10,7 @@ import com.fiendfyre.AdHell2.dagger.module.NetworkModule;
 import com.fiendfyre.AdHell2.dagger.scope.AdhellApplicationScope;
 import com.fiendfyre.AdHell2.fragments.BlockedUrlSettingFragment;
 import com.fiendfyre.AdHell2.fragments.BlockerFragment;
+import com.fiendfyre.AdHell2.fragments.MobileRestricterFragment;
 import com.fiendfyre.AdHell2.fragments.PackageDisablerFragment;
 import com.fiendfyre.AdHell2.service.BlockedDomainService;
 import com.fiendfyre.AdHell2.utils.AdhellAppIntegrity;
@@ -34,6 +35,8 @@ public interface AppComponent {
     void inject(BlockedUrlSettingFragment blockedUrlSettingFragment);
 
     void inject(PackageDisablerFragment packageDisablerFragment);
+
+    void inject(MobileRestricterFragment mobileRestricterFragment);
 
     void inject(AdhellWhitelistAppsViewModel adhellWhitelistAppsViewModel);
 

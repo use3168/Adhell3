@@ -23,6 +23,7 @@ import com.fiendfyre.AdHell2.dialogfragment.NoInternetConnectionDialogFragment;
 import com.fiendfyre.AdHell2.fragments.AdhellNotSupportedFragment;
 import com.fiendfyre.AdHell2.fragments.AdhellPermissionInfoFragment;
 import com.fiendfyre.AdHell2.fragments.BlockerFragment;
+import com.fiendfyre.AdHell2.fragments.MobileRestricterFragment;
 import com.fiendfyre.AdHell2.fragments.PackageDisablerFragment;
 import com.fiendfyre.AdHell2.service.BlockedDomainService;
 import com.fiendfyre.AdHell2.utils.AdhellAppIntegrity;
@@ -168,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.packageDisablerTab:
                 replacing = new PackageDisablerFragment();
+                break;
+            case R.id.mobileRestricterTab:
+                replacing = new MobileRestricterFragment();
                 break;
             case R.id.appPermissionsTab:
                 replacing = new AdhellPermissionInfoFragment();
