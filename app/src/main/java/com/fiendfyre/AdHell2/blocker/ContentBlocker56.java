@@ -1,5 +1,6 @@
 package com.fiendfyre.AdHell2.blocker;
 
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -18,6 +19,11 @@ import com.sec.enterprise.firewall.Firewall;
 import com.sec.enterprise.firewall.FirewallResponse;
 import com.sec.enterprise.firewall.FirewallRule;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +35,7 @@ import javax.inject.Inject;
 public class ContentBlocker56 implements ContentBlocker {
     private static ContentBlocker56 mInstance = null;
     private final String TAG = ContentBlocker56.class.getCanonicalName();
+    private PrintStream ps;
 
     @Nullable
     @Inject
@@ -38,6 +45,15 @@ public class ContentBlocker56 implements ContentBlocker {
 
     private ContentBlocker56() {
         App.get().getAppComponent().inject(this);
+        File logFile = new File(Environment.getExternalStorageDirectory(), "adhell_log.txt");
+        if (logFile.exists()) {
+            logFile.delete();
+        }
+        try {
+            ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile, true)));
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
     }
 
     public static ContentBlocker56 getInstance() {
@@ -68,23 +84,25 @@ public class ContentBlocker56 implements ContentBlocker {
         if (result) {
             try {
                 if (!mFirewall.isFirewallEnabled()) {
-                    Log.i(TAG, "Enabling firewall...");
+                    writeInfo("Enabling firewall...");
                     mFirewall.enableFirewall(true);
                 }
                 if (!mFirewall.isDomainFilterReportEnabled()) {
-                    Log.i(TAG, "Enabling firewall report...");
+                    writeInfo("Enabling firewall report...");
                     mFirewall.enableDomainFilterReport(true);
                 }
             } catch (SecurityException e) {
-                Log.e(TAG, "Failed to enable firewall: " + e.getMessage(), e);
+                writeError("Failed to enable firewall: " + e.getMessage(), e);
             }
         }
 
+        writeInfo("Done");
+        ps.close();
         return result;
     }
 
     private void processCustomRules() {
-        Log.i(TAG, "Processing custom rules...");
+        writeInfo("\nProcessing custom rules...");
         List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
         for (UserBlockUrl userBlockUrl : userBlockUrls) {
             if (userBlockUrl.url.indexOf('|') != -1) {
@@ -104,12 +122,12 @@ public class ContentBlocker56 implements ContentBlocker {
                     // Send rules to the firewall
                     FirewallResponse[] response = null;
                     try {
-                        Log.i(TAG, "Adding firewall rule '" + userBlockUrl.url + "' to Knox Firewall...");
+                        writeInfo("Adding firewall rule '" + userBlockUrl.url + "' to Knox Firewall...");
                         response = mFirewall.addRules(firewallRules);
-                        Log.i(TAG, "Result: " + response[0].getMessage());
+                        writeInfo("Result: " + response[0].getMessage());
                     } catch (SecurityException ex) {
                         // Missing required MDM permission
-                        Log.e(TAG, "Failed to add rule '" + userBlockUrl.url + "' to Knox Firewall", ex);
+                        writeError("Failed to add rule '" + userBlockUrl.url + "' to Knox Firewall", ex);
                     }
                 }
             }
@@ -117,10 +135,10 @@ public class ContentBlocker56 implements ContentBlocker {
     }
 
     private boolean processMobileRestrictedApps() {
-        Log.i(TAG, "Processing mobile restricted apps...");
+        writeInfo("\nProcessing mobile restricted apps...");
 
         List<AppInfo> restrictedApps = appDatabase.applicationInfoDao().getMobileRestrictedApps();
-        Log.i(TAG, "Restricted apps size: " + restrictedApps.size());
+        writeInfo("Restricted apps size: " + restrictedApps.size());
         if (restrictedApps.size() == 0) {
             return true;
         }
@@ -136,22 +154,22 @@ public class ContentBlocker56 implements ContentBlocker {
         // Send rules to the firewall
         FirewallResponse[] response = null;
         try {
-            Log.i(TAG, "Adding firewall rule to Knox Firewall...");
+            writeInfo("Adding firewall rule to Knox Firewall...");
             response = mFirewall.addRules(mobileRules);
-            Log.i(TAG, "Result: " + response[0].getMessage());
+            writeInfo("Result: " + response[0].getMessage());
         } catch (SecurityException ex) {
             // Missing required MDM permission
-            Log.e(TAG, "Failed to add firewall rules to Knox Firewall", ex);
+            writeError("Failed to add firewall rules to Knox Firewall", ex);
         }
         return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
     }
 
     private boolean processWhitelistedApps() {
-        Log.i(TAG, "Processing white-listed apps...");
+        writeInfo("\nProcessing white-listed apps...");
 
         // Create domain filter rule for white listed apps
         List<AppInfo> whitelistedApps = appDatabase.applicationInfoDao().getWhitelistedApps();
-        Log.i(TAG, "Whitelisted apps size: " + whitelistedApps.size());
+        writeInfo("Whitelisted apps size: " + whitelistedApps.size());
         if (whitelistedApps.size() == 0) {
             return true;
         }
@@ -160,25 +178,25 @@ public class ContentBlocker56 implements ContentBlocker {
         List<String> superAllow = new ArrayList<>();
         superAllow.add("*");
         for (AppInfo app : whitelistedApps) {
-            Log.d(TAG, app.packageName);
+            writeInfo(app.packageName);
             rules.add(new DomainFilterRule(new AppIdentity(app.packageName, null), new ArrayList<>(), superAllow));
         }
 
         // Add domain filter rule to Knox Firewall
-        Log.i(TAG, "Adding domain filter rule to Knox Firewall...");
+        writeInfo("Adding domain filter rule to Knox Firewall...");
         FirewallResponse[] response = null;
         try {
             response = mFirewall.addDomainFilterRules(rules);
-            Log.i(TAG, "Result: " + response[0].getMessage());
+            writeInfo("Result: " + response[0].getMessage());
         } catch (SecurityException ex) {
             // Missing required MDM permission
-            Log.e(TAG, "Failed to add domain filter rule to Knox Firewall", ex);
+            writeError("Failed to add domain filter rule to Knox Firewall", ex);
         }
         return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
     }
 
     private boolean processBlockedDomains() {
-        Log.i(TAG, "Processing blocked domains...");
+        writeInfo("\nProcessing blocked domains...");
 
         // Process user-defined white list
         List<WhiteUrl> whiteUrls = appDatabase.whiteUrlDao().getAll2();
@@ -186,31 +204,33 @@ public class ContentBlocker56 implements ContentBlocker {
         for (WhiteUrl whiteUrl : whiteUrls) {
             final String url = BlockUrlPatternsMatch.getValidatedUrl(whiteUrl.url);
             whiteList.add(url);
-            Log.i(TAG, "WhiteUrl: " + url);
+            writeInfo("WhiteUrl: " + url);
         }
-        Log.i(TAG, "White list size: " + whiteList.size());
+        writeInfo("White list size: " + whiteList.size());
 
         // Process user-defined blocked URLs
         Set<String> denyList = new HashSet<>();
         List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
+        int userBlockUrlCount = 0;
         for (UserBlockUrl userBlockUrl : userBlockUrls) {
             if (userBlockUrl.url.indexOf('|') == -1) {
                 final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
                 denyList.add(url);
-                Log.i(TAG, "UserBlockUrl: " + url);
+                writeInfo("UserBlockUrl: " + url);
+                userBlockUrlCount++;
             }
         }
-        Log.i(TAG, "User blocked URL size: " + userBlockUrls.size());
+        writeInfo("User blocked URL size: " + userBlockUrlCount);
 
         // Process all block URL providers into deny list
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
         int urlBlockLimit = AdhellAppIntegrity.BLOCK_URL_LIMIT;
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
-            Log.i(TAG, "Included url provider: " + blockUrlProvider.url + ", size: " + blockUrls.size());
+            writeInfo("Included url provider: " + blockUrlProvider.url + ", size: " + blockUrls.size());
 
             if (denyList.size() + blockUrls.size() > urlBlockLimit) {
-                Log.i(TAG, "Total number of blocked URLs has reached limit! " +
+                writeInfo("Total number of blocked URLs has reached limit! " +
                         "Deny list size: " + denyList.size() + ", " +
                         "Current URL provider size: " + blockUrls.size());
                 break;
@@ -220,7 +240,7 @@ public class ContentBlocker56 implements ContentBlocker {
                 denyList.add(BlockUrlPatternsMatch.getValidatedUrl(blockUrl.url));
             }
         }
-        Log.i(TAG, "Deny list size: " + denyList.size());
+        writeInfo("Total unique domains to block: " + denyList.size());
 
         // Create domain filter rule with deny and white list
         List<DomainFilterRule> rules = new ArrayList<>();
@@ -228,14 +248,14 @@ public class ContentBlocker56 implements ContentBlocker {
         rules.add(new DomainFilterRule(appIdentity, new ArrayList<>(denyList), new ArrayList<>(whiteList)));
 
         // Add domain filter rule to Knox Firewall
-        Log.i(TAG, "Adding domain filter rule to Knox Firewall...");
+        writeInfo("Adding domain filter rule to Knox Firewall...");
         FirewallResponse[] response = null;
         try {
             response = mFirewall.addDomainFilterRules(rules);
-            Log.i(TAG, "Result: " + response[0].getMessage());
+            writeInfo("Result: " + response[0].getMessage());
         } catch (SecurityException ex) {
             // Missing required MDM permission
-            Log.e(TAG, "Failed to add domain filter rule to Knox Firewall", ex);
+            writeError("Failed to add domain filter rule to Knox Firewall", ex);
         }
         return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
     }
@@ -250,7 +270,7 @@ public class ContentBlocker56 implements ContentBlocker {
             // Clear domain filter rules
             response = mFirewall.removeDomainFilterRules(DomainFilterRule.CLEAR_ALL);
 
-            Log.i(TAG, "disableBlocker " + response[0].getMessage());
+            writeInfo(response[0].getMessage());
             if (mFirewall.isFirewallEnabled()) {
                 mFirewall.enableFirewall(false);
             }
@@ -258,7 +278,7 @@ public class ContentBlocker56 implements ContentBlocker {
                 mFirewall.enableDomainFilterReport(false);
             }
         } catch (SecurityException ex) {
-            Log.e(TAG, "Failed to remove firewall rules", ex);
+            writeError("Failed to remove firewall rules", ex);
             return false;
         }
         return true;
@@ -267,6 +287,22 @@ public class ContentBlocker56 implements ContentBlocker {
     @Override
     public boolean isEnabled() {
         return mFirewall.isFirewallEnabled();
+    }
+
+    private void writeInfo(String text) {
+        Log.i(TAG, text);
+        writeText(text);
+    }
+
+    private void writeError(String text, Throwable e) {
+        Log.e(TAG, text, e);
+        writeText(text);
+    }
+
+    private void writeText(String text) {
+        ps.append(text);
+        ps.append("\n");
+        ps.flush();
     }
 
 }
