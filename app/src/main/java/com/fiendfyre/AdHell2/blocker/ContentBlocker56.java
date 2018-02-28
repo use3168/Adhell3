@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.inject.Inject;
 
@@ -59,7 +60,7 @@ public class ContentBlocker56 implements ContentBlocker {
             disableBlocker();
         }
 
-        processChromeApps();
+        processCustomRules();
         boolean result = processMobileRestrictedApps();
         result |= processWhitelistedApps();
         result |= processBlockedDomains();
@@ -82,34 +83,36 @@ public class ContentBlocker56 implements ContentBlocker {
         return result;
     }
 
-    private void processChromeApps() {
-        processChromeApp("com.android.chrome");
-        processChromeApp("com.chrome.beta");
-        processChromeApp("com.chrome.dev");
-        processChromeApp("com.chrome.canary");
-    }
+    private void processCustomRules() {
+        Log.i(TAG, "Processing custom rules...");
+        List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
+        for (UserBlockUrl userBlockUrl : userBlockUrls) {
+            if (userBlockUrl.url.indexOf('|') != -1) {
+                StringTokenizer tokens = new StringTokenizer(userBlockUrl.url, "|");
+                if (tokens.countTokens() == 3) {
+                    String packageName = tokens.nextToken();
+                    String ipAddress = tokens.nextToken();
+                    String port = tokens.nextToken();
 
-    private void processChromeApp(String packageName) {
-        Log.i(TAG, "Processing chrome app '" + packageName + "'...");
+                    // Define firewall rule
+                    FirewallRule[] firewallRules = new FirewallRule[1];
+                    firewallRules[0] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV4);
+                    firewallRules[0].setIpAddress(ipAddress);
+                    firewallRules[0].setPortNumber(port);
+                    firewallRules[0].setApplication(new AppIdentity(packageName, null));
 
-        // Block port 53 traffic for Chromium-based browsers,
-        // since Chromium has its own DNS-resolution implementation.
-        // Blocking this implementation's resolution makes it fallback to the system's one.
-        FirewallRule[] firewallRules = new FirewallRule[1];
-        firewallRules[0] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV4);
-        firewallRules[0].setIpAddress("*");
-        firewallRules[0].setPortNumber("53");
-        firewallRules[0].setApplication(new AppIdentity(packageName, null));
-
-        // Send rules to the firewall
-        FirewallResponse[] response = null;
-        try {
-            Log.i(TAG, "Adding firewall rule to Knox Firewall...");
-            response = mFirewall.addRules(firewallRules);
-            Log.i(TAG, "Result: " + response[0].getMessage());
-        } catch (SecurityException ex) {
-            // Missing required MDM permission
-            Log.e(TAG, "Failed to add rules to Knox Firewall", ex);
+                    // Send rules to the firewall
+                    FirewallResponse[] response = null;
+                    try {
+                        Log.i(TAG, "Adding firewall rule '" + userBlockUrl.url + "' to Knox Firewall...");
+                        response = mFirewall.addRules(firewallRules);
+                        Log.i(TAG, "Result: " + response[0].getMessage());
+                    } catch (SecurityException ex) {
+                        // Missing required MDM permission
+                        Log.e(TAG, "Failed to add rule '" + userBlockUrl.url + "' to Knox Firewall", ex);
+                    }
+                }
+            }
         }
     }
 
@@ -191,9 +194,11 @@ public class ContentBlocker56 implements ContentBlocker {
         Set<String> denyList = new HashSet<>();
         List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
         for (UserBlockUrl userBlockUrl : userBlockUrls) {
-            final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
-            denyList.add(url);
-            Log.i(TAG, "UserBlockUrl: " + url);
+            if (userBlockUrl.url.indexOf('|') == -1) {
+                final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
+                denyList.add(url);
+                Log.i(TAG, "UserBlockUrl: " + url);
+            }
         }
         Log.i(TAG, "User blocked URL size: " + userBlockUrls.size());
 

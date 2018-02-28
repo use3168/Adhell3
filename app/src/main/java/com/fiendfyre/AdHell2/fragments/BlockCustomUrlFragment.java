@@ -22,6 +22,7 @@ import com.fiendfyre.AdHell2.utils.BlockUrlPatternsMatch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class BlockCustomUrlFragment extends LifecycleFragment {
 
@@ -66,16 +67,30 @@ public class BlockCustomUrlFragment extends LifecycleFragment {
         Button addCustomBlockedUrlButton = (Button) view.findViewById(R.id.addCustomBlockedUrlButton);
         addCustomBlockedUrlButton.setOnClickListener(v -> {
             String urlToAdd = addBlockedUrlEditText.getText().toString().trim().toLowerCase();
-            if (!BlockUrlPatternsMatch.isUrlValid(urlToAdd)) {
-                Toast.makeText(context, "Url not valid. Please check", Toast.LENGTH_SHORT).show();
-                return;
+            if (urlToAdd.indexOf('|') == -1) {
+                if (!BlockUrlPatternsMatch.isUrlValid(urlToAdd)) {
+                    Toast.makeText(context, "Url not valid. Please check", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } else {
+                // packageName|ipAddress|port
+                StringTokenizer tokens = new StringTokenizer(urlToAdd, "|");
+                if (tokens.countTokens() != 3) {
+                    Toast.makeText(context, "Rule not valid. Please check", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
+
             AsyncTask.execute(() -> {
                 UserBlockUrl userBlockUrl = new UserBlockUrl(urlToAdd);
                 appDatabase.userBlockUrlDao().insert(userBlockUrl);
             });
             addBlockedUrlEditText.setText("");
-            Toast.makeText(context, "Url has been added", Toast.LENGTH_SHORT).show();
+            if (urlToAdd.indexOf('|') == -1) {
+                Toast.makeText(context, "Url has been added", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Rule has been added", Toast.LENGTH_SHORT).show();
+            }
         });
         return view;
     }
