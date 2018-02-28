@@ -59,26 +59,123 @@ public class ContentBlocker56 implements ContentBlocker {
             disableBlocker();
         }
 
-        Log.d(TAG, "Adding: DENY MOBILE DATA");
-        List<AppInfo> restrictedApps = appDatabase.applicationInfoDao().getMobileRestrictedApps();
-        if (restrictedApps.size() > 0) {
-            // Define DENY rules for mobile data
-            FirewallRule[] mobileRules = new FirewallRule[restrictedApps.size()];
-            for (int i = 0; i < restrictedApps.size(); i++) {
-                mobileRules[i] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV4);
-                mobileRules[i].setNetworkInterface(Firewall.NetworkInterface.MOBILE_DATA_ONLY);
-                mobileRules[i].setApplication(new AppIdentity(restrictedApps.get(i).packageName, null));
-            }
+        processChromeApps();
+        boolean result = processMobileRestrictedApps();
+        result |= processWhitelistedApps();
+        result |= processBlockedDomains();
 
-            // Send rules to the firewall
-            FirewallResponse[] response = mFirewall.addRules(mobileRules);
-            if (FirewallResponse.Result.SUCCESS == response[0].getResult()) {
-                Log.i(TAG, "Mobile data rules have been added: " + response[0].getMessage());
-            } else {
-                Log.i(TAG, "Failed to add mobile data rules: " + response[0].getMessage());
+        if (result) {
+            try {
+                if (!mFirewall.isFirewallEnabled()) {
+                    Log.i(TAG, "Enabling firewall...");
+                    mFirewall.enableFirewall(true);
+                }
+                if (!mFirewall.isDomainFilterReportEnabled()) {
+                    Log.i(TAG, "Enabling firewall report...");
+                    mFirewall.enableDomainFilterReport(true);
+                }
+            } catch (SecurityException e) {
+                Log.e(TAG, "Failed to enable firewall: " + e.getMessage(), e);
             }
         }
+
+        return result;
+    }
+
+    private void processChromeApps() {
+        processChromeApp("com.android.chrome");
+        processChromeApp("com.chrome.beta");
+        processChromeApp("com.chrome.dev");
+        processChromeApp("com.chrome.canary");
+    }
+
+    private void processChromeApp(String packageName) {
+        Log.i(TAG, "Processing chrome app '" + packageName + "'...");
+
+        // Block port 53 traffic for Chromium-based browsers,
+        // since Chromium has its own DNS-resolution implementation.
+        // Blocking this implementation's resolution makes it fallback to the system's one.
+        FirewallRule[] firewallRules = new FirewallRule[1];
+        firewallRules[0] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV4);
+        firewallRules[0].setIpAddress("*");
+        firewallRules[0].setPortNumber("53");
+        firewallRules[0].setApplication(new AppIdentity(packageName, null));
+
+        // Send rules to the firewall
+        FirewallResponse[] response = null;
+        try {
+            Log.i(TAG, "Adding firewall rule to Knox Firewall...");
+            response = mFirewall.addRules(firewallRules);
+            Log.i(TAG, "Result: " + response[0].getMessage());
+        } catch (SecurityException ex) {
+            // Missing required MDM permission
+            Log.e(TAG, "Failed to add rules to Knox Firewall", ex);
+        }
+    }
+
+    private boolean processMobileRestrictedApps() {
+        Log.i(TAG, "Processing mobile restricted apps...");
+
+        List<AppInfo> restrictedApps = appDatabase.applicationInfoDao().getMobileRestrictedApps();
         Log.i(TAG, "Restricted apps size: " + restrictedApps.size());
+        if (restrictedApps.size() == 0) {
+            return true;
+        }
+
+        // Define DENY rules for mobile data
+        FirewallRule[] mobileRules = new FirewallRule[restrictedApps.size()];
+        for (int i = 0; i < restrictedApps.size(); i++) {
+            mobileRules[i] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV4);
+            mobileRules[i].setNetworkInterface(Firewall.NetworkInterface.MOBILE_DATA_ONLY);
+            mobileRules[i].setApplication(new AppIdentity(restrictedApps.get(i).packageName, null));
+        }
+
+        // Send rules to the firewall
+        FirewallResponse[] response = null;
+        try {
+            Log.i(TAG, "Adding firewall rule to Knox Firewall...");
+            response = mFirewall.addRules(mobileRules);
+            Log.i(TAG, "Result: " + response[0].getMessage());
+        } catch (SecurityException ex) {
+            // Missing required MDM permission
+            Log.e(TAG, "Failed to add firewall rules to Knox Firewall", ex);
+        }
+        return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
+    }
+
+    private boolean processWhitelistedApps() {
+        Log.i(TAG, "Processing white-listed apps...");
+
+        // Create domain filter rule for white listed apps
+        List<AppInfo> whitelistedApps = appDatabase.applicationInfoDao().getWhitelistedApps();
+        Log.i(TAG, "Whitelisted apps size: " + whitelistedApps.size());
+        if (whitelistedApps.size() == 0) {
+            return true;
+        }
+
+        List<DomainFilterRule> rules = new ArrayList<>();
+        List<String> superAllow = new ArrayList<>();
+        superAllow.add("*");
+        for (AppInfo app : whitelistedApps) {
+            Log.d(TAG, app.packageName);
+            rules.add(new DomainFilterRule(new AppIdentity(app.packageName, null), new ArrayList<>(), superAllow));
+        }
+
+        // Add domain filter rule to Knox Firewall
+        Log.i(TAG, "Adding domain filter rule to Knox Firewall...");
+        FirewallResponse[] response = null;
+        try {
+            response = mFirewall.addDomainFilterRules(rules);
+            Log.i(TAG, "Result: " + response[0].getMessage());
+        } catch (SecurityException ex) {
+            // Missing required MDM permission
+            Log.e(TAG, "Failed to add domain filter rule to Knox Firewall", ex);
+        }
+        return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
+    }
+
+    private boolean processBlockedDomains() {
+        Log.i(TAG, "Processing blocked domains...");
 
         // Process user-defined white list
         List<WhiteUrl> whiteUrls = appDatabase.whiteUrlDao().getAll2();
@@ -104,8 +201,9 @@ public class ContentBlocker56 implements ContentBlocker {
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
         int urlBlockLimit = AdhellAppIntegrity.BLOCK_URL_LIMIT;
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
-            Log.i(TAG, "Included url provider: " + blockUrlProvider.url);
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
+            Log.i(TAG, "Included url provider: " + blockUrlProvider.url + ", size: " + blockUrls.size());
+
             if (denyList.size() + blockUrls.size() > urlBlockLimit) {
                 Log.i(TAG, "Total number of blocked URLs has reached limit! " +
                         "Deny list size: " + denyList.size() + ", " +
@@ -124,68 +222,17 @@ public class ContentBlocker56 implements ContentBlocker {
         AppIdentity appIdentity = new AppIdentity("*", null);
         rules.add(new DomainFilterRule(appIdentity, new ArrayList<>(denyList), new ArrayList<>(whiteList)));
 
-        // Create domain filter rule for white listed apps
-        List<String> superAllow = new ArrayList<>();
-        superAllow.add("*");
-        List<AppInfo> appInfos = appDatabase.applicationInfoDao().getWhitelistedApps();
-        Log.d(TAG, "Whitelisted apps size: " + appInfos.size());
-        for (AppInfo app : appInfos) {
-            Log.d(TAG, app.packageName);
-            rules.add(new DomainFilterRule(new AppIdentity(app.packageName, null), new ArrayList<>(), superAllow));
-        }
-
-        // Create firewall rule for blocking port 53 and add it to Knox Firewall
-        // It is necessary for Chrome
-        try {
-            Log.d(TAG, "Adding: DENY PORT 53");
-            FirewallRule[] portRules = new FirewallRule[2];
-
-            // Add deny rules for DNS port (53)
-            portRules[0] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV4);
-            portRules[0].setIpAddress("*");
-            portRules[0].setPortNumber("53");
-
-            portRules[1] = new FirewallRule(FirewallRule.RuleType.DENY, Firewall.AddressType.IPV6);
-            portRules[1].setIpAddress("*");
-            portRules[1].setPortNumber("53");
-
-            // Send rules to the firewall
-            FirewallResponse[] response = mFirewall.addRules(portRules);
-            if (FirewallResponse.Result.SUCCESS == response[0].getResult()) {
-                Log.i(TAG, "Port rules have been added: " + response[0].getMessage());
-            } else {
-                Log.i(TAG, "Failed to add port rules: " + response[0].getMessage());
-            }
-        }
-        catch (SecurityException ex)
-        {
-            Log.e(TAG, "Failed to add PORT rule.", ex);
-            return false;
-        }
-
         // Add domain filter rule to Knox Firewall
+        Log.i(TAG, "Adding domain filter rule to Knox Firewall...");
+        FirewallResponse[] response = null;
         try {
-            Log.d(TAG, "Adding: DENY DOMAINS");
-            FirewallResponse[] response = mFirewall.addDomainFilterRules(rules);
-
-            if (!mFirewall.isFirewallEnabled()) {
-                mFirewall.enableFirewall(true);
-            }
-            if (!mFirewall.isDomainFilterReportEnabled()) {
-                Log.d(TAG, "Enabling filewall report");
-                mFirewall.enableDomainFilterReport(true);
-            }
-            if (FirewallResponse.Result.SUCCESS == response[0].getResult()) {
-                Log.i(TAG, "Adhell enabled " + response[0].getMessage());
-                return true;
-            } else {
-                Log.i(TAG, "Adhell enabling failed " + response[0].getMessage());
-                return false;
-            }
+            response = mFirewall.addDomainFilterRules(rules);
+            Log.i(TAG, "Result: " + response[0].getMessage());
         } catch (SecurityException ex) {
-            Log.e(TAG, "Adhell enabling failed", ex);
-            return false;
+            // Missing required MDM permission
+            Log.e(TAG, "Failed to add domain filter rule to Knox Firewall", ex);
         }
+        return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
     }
 
     @Override
