@@ -148,4 +148,6 @@
     <string name="custom_domains_blocked">{{numberOfDomainsBlockedByUser}} 個自訂攔截</string>
     <string name="number_of_domains_whitelisted">{{numberOfWhitelistedDomains}} 個白名單</string>
     <string name="number_of_permissions_restricted">{{numberOfRestrictedPermissions}} 個權限限制</string>
+    <string name="show_blocked_urls">Show blocked URLs</string>
+    <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
 </resources>

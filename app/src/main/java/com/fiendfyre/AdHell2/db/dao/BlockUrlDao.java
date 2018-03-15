@@ -26,4 +26,7 @@ public interface BlockUrlDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(BlockUrl... blockUrls);
+
+    @Query("SELECT * FROM BlockUrl WHERE urlProviderId = :urlProviderId AND url LIKE :url")
+    List<BlockUrl> getByUrl(long urlProviderId, String url);
 }

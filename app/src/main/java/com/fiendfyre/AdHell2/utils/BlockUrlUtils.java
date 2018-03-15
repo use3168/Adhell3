@@ -4,8 +4,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.webkit.URLUtil;
 
+import com.fiendfyre.AdHell2.db.AppDatabase;
 import com.fiendfyre.AdHell2.db.entity.BlockUrl;
 import com.fiendfyre.AdHell2.db.entity.BlockUrlProvider;
+import com.fiendfyre.AdHell2.db.entity.UserBlockUrl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -60,4 +62,59 @@ public class BlockUrlUtils {
         bufferedReader.close();
         return new ArrayList<>(blockUrls);
     }
+
+    public static Set<String> getUniqueBlockedUrls(AppDatabase appDatabase, int urlBlockLimit, boolean logging) {
+        Set<String> denyList = new HashSet<>();
+
+        // Process user-defined blocked URLs
+        int userBlockUrlCount = 0;
+        List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
+        for (UserBlockUrl userBlockUrl : userBlockUrls) {
+            if (userBlockUrl.url.indexOf('|') == -1) {
+                final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
+                denyList.add(url);
+                if (logging) LogUtils.getInstance().writeInfo("UserBlockUrl: " + url);
+                userBlockUrlCount++;
+            }
+        }
+        if (logging) LogUtils.getInstance().writeInfo("User blocked URL size: " + userBlockUrlCount);
+
+        // Process all blocked URL providers
+        List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
+        for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
+            List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
+            if (logging) LogUtils.getInstance().writeInfo("Included url provider: " + blockUrlProvider.url + ", size: " + blockUrls.size());
+
+            for (BlockUrl blockUrl : blockUrls) {
+                if (denyList.size() > urlBlockLimit) {
+                    if (logging) LogUtils.getInstance().writeInfo("Total number of blocked URLs has reached limit! ");
+                    break;
+                }
+                denyList.add(BlockUrlPatternsMatch.getValidatedUrl(blockUrl.url));
+            }
+        }
+
+        if (logging) LogUtils.getInstance().writeInfo("Total unique domains to block: " + denyList.size());
+        return denyList;
+    }
+
+    public static Set<String> getMatchBlockedUrls(AppDatabase appDatabase, String filterText) {
+        Set<String> result = new HashSet<>();
+
+        List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getByUrl(filterText);
+        for (UserBlockUrl userBlockUrl : userBlockUrls) {
+            result.add(userBlockUrl.url);
+        }
+
+        List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
+        for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
+            List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getByUrl(blockUrlProvider.id, filterText);
+            for (BlockUrl blockUrl: blockUrls) {
+                result.add(blockUrl.url);
+            }
+        }
+
+        return result;
+    }
+
 }

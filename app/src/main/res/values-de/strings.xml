@@ -155,4 +155,6 @@
     </string>
     <string name="blog">Blog</string>
     <string name="only_for_premium_title">Only for Premium</string>
+    <string name="show_blocked_urls">Show blocked URLs</string>
+    <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
 </resources>

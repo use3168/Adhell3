@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.fiendfyre.AdHell2.fragments.ShowBlockUrlFragment">
+
+    <TextView
+        android:id="@+id/total_blocked_urls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/total_blocked_urls"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/blockedUrlFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionSearch"
+        android:inputType="textNoSuggestions|textVisiblePassword"
+        android:lines="1"
+        android:singleLine="true" />
+
+    <ListView
+        android:id="@+id/blocked_url_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

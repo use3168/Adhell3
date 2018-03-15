@@ -188,5 +188,7 @@
         \n\nStay tuned. If everything goes as expected Adhell will have more features in the near
         future.
     </string>
+    <string name="show_blocked_urls">Show blocked URLs</string>
+    <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
 
 </resources>

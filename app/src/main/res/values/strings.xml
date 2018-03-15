@@ -223,5 +223,7 @@
     <string name="imported_restricted_from_storage">Importing restricted apps from storage</string>
     <string name="exported_restricted_to_storage">Restricted apps exported to mobile_restricted_packages.txt</string>
     <string name="enabled_all_restricted">Enabling all restricted apps</string>
+    <string name="show_blocked_urls">Show blocked URLs</string>
+    <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
 
 </resources>

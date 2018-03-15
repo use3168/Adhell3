@@ -48,6 +48,7 @@ public class BlockedUrlSettingFragment extends LifecycleFragment {
             fragmentTransaction.addToBackStack("manage_url_to_add_custom");
             fragmentTransaction.commit();
         });
+
         Button showCustomUrlProvidersFragmentButton = (Button) view.findViewById(R.id.showCustomUrlProvidersFragmentButton);
         if (contentBlocker instanceof ContentBlocker57) {
             showCustomUrlProvidersFragmentButton.setOnClickListener(v -> {
@@ -59,6 +60,15 @@ public class BlockedUrlSettingFragment extends LifecycleFragment {
         } else {
             showCustomUrlProvidersFragmentButton.setVisibility(View.GONE);
         }
+
+        Button showBlockedUrls = (Button) view.findViewById(R.id.showBlockedUrls);
+        showBlockedUrls.setOnClickListener(v -> {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainer, new ShowBlockUrlFragment());
+            fragmentTransaction.addToBackStack("manage_url_to_add_custom");
+            fragmentTransaction.commit();
+        });
+
         return view;
     }
 }

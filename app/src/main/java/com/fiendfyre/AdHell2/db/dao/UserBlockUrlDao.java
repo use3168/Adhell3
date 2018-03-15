@@ -30,4 +30,7 @@ public interface UserBlockUrlDao {
 
     @Query("DELETE FROM UserBlockUrl WHERE url = :url")
     void deleteByUrl(String url);
+
+    @Query("SELECT * FROM UserBlockUrl WHERE url LIKE :url")
+    List<UserBlockUrl> getByUrl(String url);
 }

@@ -222,4 +222,6 @@
     <string name="number_of_permissions_restricted">{{numberOfRestrictedPermissions}} permisos
         restringidos
     </string>
+    <string name="show_blocked_urls">Show blocked URLs</string>
+    <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
 </resources>

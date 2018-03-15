@@ -24,4 +24,11 @@
         android:layout_centerHorizontal="true"
         android:text="@string/show_custom_providers"
     />
+    <Button
+        android:id="@+id/showBlockedUrls"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/showCustomUrlProvidersFragmentButton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/show_blocked_urls"/>
 </android.support.percent.PercentRelativeLayout>
