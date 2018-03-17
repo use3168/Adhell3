@@ -25,19 +25,7 @@ public final class BlockUrlPatternsMatch {
         return domain_r.matcher(domain).matches();
     }
 
-    private static String normalizeUrl(String url) {
-        return url
-
-        // Remove 'deadzone' - We only want the domain
-        .replace("127.0.0.1", "")
-        .replace("0.0.0.0", "")
-
-        // Let's remove the unnecessary www, www1 etc.
-        .replaceAll("^(www)([0-9]{0,3})?(\\.)", "");
-    }
-
     public static boolean isUrlValid(String url) {
-        url = normalizeUrl(url);
         if (url.contains("*")) {
             return BlockUrlPatternsMatch.wildcardValid(url);
         }

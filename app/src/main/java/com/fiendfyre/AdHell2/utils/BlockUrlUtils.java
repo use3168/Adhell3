@@ -41,10 +41,7 @@ public class BlockUrlUtils {
         Set<BlockUrl> blockUrls = new HashSet<>();
         String inputLine;
         while ((inputLine = bufferedReader.readLine()) != null) {
-            inputLine = inputLine
-                    .replaceAll("\\s","") // Remove whitespace
-                    .replaceAll("(#.*)|((\\s)+#.*)","") // Remove comments
-                    .toLowerCase();
+            inputLine = getDomain(inputLine).trim().toLowerCase();
 
             if (blockUrls.size() > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
                 bufferedReader.close();
@@ -61,6 +58,22 @@ public class BlockUrlUtils {
         }
         bufferedReader.close();
         return new ArrayList<>(blockUrls);
+    }
+
+    private static String getDomain(String inputLine) {
+        return inputLine
+                // Remove 'deadzone' - We only want the domain
+                .replace("127.0.0.1", "")
+                .replace("0.0.0.0", "")
+
+                // Remove whitespace
+                .replaceAll("\\s","")
+
+                // Remove comments
+                .replaceAll("(#.*)|((\\s)+#.*)","")
+
+                // Remove WWW, WWW1 etc. prefix
+                .replaceAll("^(www)([0-9]{0,3})?(\\.)","");
     }
 
     public static Set<String> getUniqueBlockedUrls(AppDatabase appDatabase, int urlBlockLimit, boolean logging) {
