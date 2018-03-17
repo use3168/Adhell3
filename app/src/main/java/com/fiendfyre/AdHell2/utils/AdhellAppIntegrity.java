@@ -205,6 +205,13 @@ public class AdhellAppIntegrity {
         if (blockUrlProvider != null) {
             return;
         }
+
+        // Remove existing default
+        if (appDatabase.blockUrlProviderDao().getDefault().size() > 0) {
+            appDatabase.blockUrlProviderDao().deleteDefault();
+        }
+
+        // Add the default package
         blockUrlProvider = new BlockUrlProvider();
         blockUrlProvider.url = ADHELL_STANDARD_PACKAGE;
         blockUrlProvider.lastUpdated = new Date();
