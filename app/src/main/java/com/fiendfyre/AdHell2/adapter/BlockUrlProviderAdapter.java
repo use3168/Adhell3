@@ -16,6 +16,8 @@ import com.fiendfyre.AdHell2.App;
 import com.fiendfyre.AdHell2.R;
 import com.fiendfyre.AdHell2.db.AppDatabase;
 import com.fiendfyre.AdHell2.db.entity.BlockUrlProvider;
+import com.fiendfyre.AdHell2.utils.AdhellAppIntegrity;
+import com.fiendfyre.AdHell2.utils.BlockUrlUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -67,6 +69,15 @@ public class BlockUrlProviderAdapter extends ArrayAdapter<BlockUrlProvider> {
                 Maybe.fromCallable(() -> {
                     AppDatabase mDb = AppDatabase.getAppDatabase(App.get().getApplicationContext());
                     mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider2);
+
+                    if (isChecked) {
+                        int totalUrls = BlockUrlUtils.getUniqueBlockedUrls(mDb, false).size();
+                        if (totalUrls > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
+                            blockUrlProvider2.selected = false;
+                            mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider2);
+                        }
+                    }
+
                     return null;
                 })
                         .subscribeOn(Schedulers.io())

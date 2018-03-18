@@ -42,18 +42,9 @@ public class BlockUrlUtils {
         String inputLine;
         while ((inputLine = bufferedReader.readLine()) != null) {
             inputLine = getDomain(inputLine).trim().toLowerCase();
-
-            if (blockUrls.size() > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
-                bufferedReader.close();
-                throw new IllegalArgumentException("The URL provider contains more than " +
-                        AdhellAppIntegrity.BLOCK_URL_LIMIT + " domains.");
-            }
-
             if (BlockUrlPatternsMatch.isUrlValid(inputLine)) {
                 BlockUrl blockUrl = new BlockUrl(inputLine, blockUrlProvider.id);
                 blockUrls.add(blockUrl);
-            } else {
-                Log.d(TAG, "Invalid URL: " + inputLine);
             }
         }
         bufferedReader.close();
@@ -76,7 +67,7 @@ public class BlockUrlUtils {
                 .replaceAll("^(www)([0-9]{0,3})?(\\.)","");
     }
 
-    public static Set<String> getUniqueBlockedUrls(AppDatabase appDatabase, int urlBlockLimit, boolean logging) {
+    public static Set<String> getUniqueBlockedUrls(AppDatabase appDatabase, boolean logging) {
         Set<String> denyList = new HashSet<>();
 
         // Process user-defined blocked URLs
@@ -99,10 +90,6 @@ public class BlockUrlUtils {
             if (logging) LogUtils.getInstance().writeInfo("Included url provider: " + blockUrlProvider.url + ", size: " + blockUrls.size());
 
             for (BlockUrl blockUrl : blockUrls) {
-                if (denyList.size() > urlBlockLimit) {
-                    if (logging) LogUtils.getInstance().writeInfo("Total number of blocked URLs has reached limit! ");
-                    break;
-                }
                 denyList.add(BlockUrlPatternsMatch.getValidatedUrl(blockUrl.url));
             }
         }

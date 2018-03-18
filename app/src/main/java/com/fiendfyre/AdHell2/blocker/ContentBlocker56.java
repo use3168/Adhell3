@@ -193,7 +193,7 @@ public class ContentBlocker56 implements ContentBlocker {
         LogUtils.getInstance().writeInfo("White list size: " + whiteList.size());
 
         // Process blocked URLs
-        Set<String> denyList = BlockUrlUtils.getUniqueBlockedUrls(appDatabase, AdhellAppIntegrity.BLOCK_URL_LIMIT,true);
+        Set<String> denyList = BlockUrlUtils.getUniqueBlockedUrls(appDatabase, true);
 
         // Create domain filter rule with deny and white list
         List<DomainFilterRule> rules = new ArrayList<>();

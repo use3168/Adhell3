@@ -40,7 +40,7 @@ public class ShowBlockUrlFragment extends LifecycleFragment {
         new AsyncTask<Void, Void, Set<String>>() {
             @Override
             protected Set<String> doInBackground(Void... o) {
-                return BlockUrlUtils.getUniqueBlockedUrls(appDatabase, AdhellAppIntegrity.BLOCK_URL_LIMIT, false);
+                return BlockUrlUtils.getUniqueBlockedUrls(appDatabase, false);
             }
 
             @Override
@@ -72,7 +72,7 @@ public class ShowBlockUrlFragment extends LifecycleFragment {
                         final String text = editText.getText().toString();
                         final String filterText = '%' + text + '%';
                         return text.isEmpty() ?
-                                BlockUrlUtils.getUniqueBlockedUrls(appDatabase, AdhellAppIntegrity.BLOCK_URL_LIMIT,false) :
+                                BlockUrlUtils.getUniqueBlockedUrls(appDatabase, false) :
                                 BlockUrlUtils.getMatchBlockedUrls(appDatabase, filterText);
                     }
 
