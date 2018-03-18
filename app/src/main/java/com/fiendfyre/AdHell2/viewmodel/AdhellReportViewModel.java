@@ -9,7 +9,7 @@ import android.arch.lifecycle.MutableLiveData;
 import com.fiendfyre.AdHell2.db.AppDatabase;
 import com.fiendfyre.AdHell2.db.entity.ReportBlockedUrl;
 
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 public class AdhellReportViewModel extends AndroidViewModel {
@@ -30,9 +30,13 @@ public class AdhellReportViewModel extends AndroidViewModel {
     }
 
     private void loadReportBlockedUrls() {
-        reportBlockedUrls =
-                mDb.reportBlockedUrlDao().getReportBlockUrlBetween(
-                        new Date(System.currentTimeMillis() - 24 * 3600 * 1000), new Date());
+        reportBlockedUrls = mDb.reportBlockedUrlDao().getReportBlockUrlBetween(
+                yesterday(), System.currentTimeMillis());
     }
 
+    private long yesterday() {
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return cal.getTimeInMillis();
+    }
 }

@@ -14,7 +14,7 @@ import com.sec.enterprise.firewall.DomainFilterReport;
 import com.sec.enterprise.firewall.Firewall;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -60,13 +60,12 @@ public class BlockedDomainService extends IntentService {
         }
 
         Log.d(TAG, "Saving domain list");
-        Date yesterday = new Date(System.currentTimeMillis() - 24 * 3600 * 1000);
-        appDatabase.reportBlockedUrlDao().deleteBefore(yesterday);
+        appDatabase.reportBlockedUrlDao().deleteBefore(yesterday());
 
         ReportBlockedUrl lastBlockedUrl = appDatabase.reportBlockedUrlDao().getLastBlockedDomain();
         long lastBlockedTimestamp = 0;
         if (lastBlockedUrl != null) {
-            lastBlockedTimestamp = lastBlockedUrl.blockDate.getTime() / 1000;
+            lastBlockedTimestamp = lastBlockedUrl.blockDate;
         }
 
         List<ReportBlockedUrl> reportBlockedUrls = new ArrayList<>();
@@ -75,12 +74,18 @@ public class BlockedDomainService extends IntentService {
             return;
         }
         for (DomainFilterReport b : reports) {
-            if (b.getTimeStamp() > lastBlockedTimestamp) {
+            if (b.getTimeStamp() * 1000 > lastBlockedTimestamp) {
                 ReportBlockedUrl reportBlockedUrl =
-                        new ReportBlockedUrl(b.getDomainUrl(), b.getPackageName(), new Date(b.getTimeStamp() * 1000));
+                        new ReportBlockedUrl(b.getDomainUrl(), b.getPackageName(), b.getTimeStamp() * 1000);
                 reportBlockedUrls.add(reportBlockedUrl);
             }
         }
         appDatabase.reportBlockedUrlDao().insertAll(reportBlockedUrls);
+    }
+
+    private long yesterday() {
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return cal.getTimeInMillis();
     }
 }

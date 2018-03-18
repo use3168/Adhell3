@@ -8,8 +8,6 @@ import android.arch.persistence.room.TypeConverters;
 
 import com.fiendfyre.AdHell2.db.DateConverter;
 
-import java.util.Date;
-
 @Entity(tableName = "ReportBlockedUrl")
 @TypeConverters(DateConverter.class)
 public class ReportBlockedUrl {
@@ -19,16 +17,16 @@ public class ReportBlockedUrl {
     public long id;
     public String url;
     public String packageName;
-    public Date blockDate;
+    public long blockDate;
 
     public ReportBlockedUrl() {
     }
 
     @Ignore
-    public ReportBlockedUrl(String url, String packageName, Date blockDate) {
+    public ReportBlockedUrl(String url, String packageName, long timestamp) {
         this.url = url;
         this.packageName = packageName;
-        this.blockDate = blockDate;
+        this.blockDate = timestamp;
     }
 
     @Override

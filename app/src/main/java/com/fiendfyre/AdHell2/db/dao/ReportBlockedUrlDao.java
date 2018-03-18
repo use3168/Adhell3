@@ -10,7 +10,6 @@ import android.arch.persistence.room.TypeConverters;
 import com.fiendfyre.AdHell2.db.DateConverter;
 import com.fiendfyre.AdHell2.db.entity.ReportBlockedUrl;
 
-import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -24,10 +23,10 @@ public interface ReportBlockedUrlDao {
     void insertAll(List<ReportBlockedUrl> reportBlockedUrls);
 
     @Query("SELECT * FROM ReportBlockedUrl WHERE blockDate BETWEEN :startDate AND :endDate ORDER BY _id DESC")
-    LiveData<List<ReportBlockedUrl>> getReportBlockUrlBetween(Date startDate, Date endDate);
+    LiveData<List<ReportBlockedUrl>> getReportBlockUrlBetween(long startDate, long endDate);
 
     @Query("DELETE FROM ReportBlockedUrl WHERE blockDate < :blockDate")
-    void deleteBefore(Date blockDate);
+    void deleteBefore(long blockDate);
 
     @Query("SELECT * FROM ReportBlockedUrl ORDER BY blockDate DESC LIMIT 1")
     ReportBlockedUrl getLastBlockedDomain();

@@ -24,6 +24,8 @@ public class ReportBlockedUrlAdapter extends ArrayAdapter<ReportBlockedUrl> {
     private static final String TAG = ReportBlockedUrlAdapter.class.getCanonicalName();
     private PackageManager packageManager;
 
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
+
     public ReportBlockedUrlAdapter(@NonNull Context context, @NonNull List<ReportBlockedUrl> objects) {
         super(context, 0, objects);
         packageManager = getContext().getPackageManager();
@@ -40,12 +42,9 @@ public class ReportBlockedUrlAdapter extends ArrayAdapter<ReportBlockedUrl> {
             return convertView;
         }
 
-        TextView blockedDomainIdTextView = convertView.findViewById(R.id.blockedDomainIdTextView);
         ImageView blockedDomainIconImageView = convertView.findViewById(R.id.blockedDomainIconImageView);
         TextView blockedDomainAppNameTextView = convertView.findViewById(R.id.blockedDomainAppNameTextView);
         TextView blockedDomainTimeTextView = convertView.findViewById(R.id.blockedDomainTimeTextView);
-        TextView blockedDomainUrlTextView = convertView.findViewById(R.id.blockedDomainUrlTextView);
-
 
         String packageName = reportBlockedUrl.packageName;
         Drawable icon = null;
@@ -55,7 +54,6 @@ public class ReportBlockedUrlAdapter extends ArrayAdapter<ReportBlockedUrl> {
             Log.e(TAG, "Failed to getAll application icon.", e);
         }
 
-
         ApplicationInfo ai;
         try {
             ai = packageManager.getApplicationInfo(packageName, 0);
@@ -64,14 +62,11 @@ public class ReportBlockedUrlAdapter extends ArrayAdapter<ReportBlockedUrl> {
         }
         String applicationName = (String) (ai != null ? packageManager.getApplicationLabel(ai) : "(unknown)");
 
-
-        blockedDomainIdTextView.setText(reportBlockedUrl.id + "");
         if (icon != null) {
             blockedDomainIconImageView.setImageDrawable(icon);
         }
-        blockedDomainAppNameTextView.setText(applicationName);
-        blockedDomainTimeTextView.setText(new SimpleDateFormat("HH:mm:ss").format(reportBlockedUrl.blockDate));
-        blockedDomainUrlTextView.setText(reportBlockedUrl.url);
+        blockedDomainAppNameTextView.setText(applicationName.concat("\n").concat(reportBlockedUrl.url));
+        blockedDomainTimeTextView.setText(dateFormatter.format(reportBlockedUrl.blockDate));
 
         return convertView;
     }
