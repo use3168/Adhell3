@@ -92,9 +92,6 @@ public class BlockerFragment extends LifecycleFragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.dispose();
-        }
     }
 
     @Override
