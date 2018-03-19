@@ -58,7 +58,7 @@
     <string name="whitelist">Show Whitelist</string>
     <string name="blocklist">Show Blocklist</string>
     <string name="back_to_main">Back to Main</string>
-    <string name="editAlert">To take effect, turn off and turn on Adhell after editing list.\n\nAn URL can contain wildcard, e.g. *facebook.com\n
+    <string name="editAlert">To take effect, turn off and turn on Adhell after editing list.\n\nAn URL can contain wildcard, e.g. *facebook.com\nTo define URL for an individual app, please use this following format:\npackageName|url
     </string>
     <string name="allow_apps">Manage Whitelisted Apps</string>
     <string name="delete_app">Turn Off and Delete Adhell</string>

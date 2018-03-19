@@ -21,6 +21,7 @@ import com.fiendfyre.AdHell2.utils.BlockUrlPatternsMatch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 public class WhitelistFragment extends LifecycleFragment {
@@ -66,10 +67,20 @@ public class WhitelistFragment extends LifecycleFragment {
         });
         addWhitelistUrl.setOnClickListener(v -> {
             String urlToAdd = whitelistUrlEditText.getText().toString();
-            if (!BlockUrlPatternsMatch.isUrlValid(urlToAdd)) {
-                Toast.makeText(this.getContext(), "Url not valid. Please check", Toast.LENGTH_SHORT).show();
-                return;
+            if (urlToAdd.indexOf('|') == -1) {
+                if (!BlockUrlPatternsMatch.isUrlValid(urlToAdd)) {
+                    Toast.makeText(this.getContext(), "Url not valid. Please check", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } else {
+                // packageName|url
+                StringTokenizer tokens = new StringTokenizer(urlToAdd, "|");
+                if (tokens.countTokens() != 2) {
+                    Toast.makeText(this.getContext(), "Rule not valid. Please check", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
+
             AsyncTask.execute(() -> {
                 WhiteUrl whiteUrl = new WhiteUrl(urlToAdd);
                 appDatabase.whiteUrlDao().insert(whiteUrl);

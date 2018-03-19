@@ -1,13 +1,11 @@
 package com.fiendfyre.AdHell2.blocker;
 
 import android.support.annotation.Nullable;
-
 import com.fiendfyre.AdHell2.App;
 import com.fiendfyre.AdHell2.db.AppDatabase;
 import com.fiendfyre.AdHell2.db.entity.AppInfo;
 import com.fiendfyre.AdHell2.db.entity.UserBlockUrl;
 import com.fiendfyre.AdHell2.db.entity.WhiteUrl;
-import com.fiendfyre.AdHell2.utils.AdhellAppIntegrity;
 import com.fiendfyre.AdHell2.utils.BlockUrlPatternsMatch;
 import com.fiendfyre.AdHell2.utils.BlockUrlUtils;
 import com.fiendfyre.AdHell2.utils.LogUtils;
@@ -17,13 +15,8 @@ import com.sec.enterprise.firewall.Firewall;
 import com.sec.enterprise.firewall.FirewallResponse;
 import com.sec.enterprise.firewall.FirewallRule;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-
 import javax.inject.Inject;
+import java.util.*;
 
 public class ContentBlocker56 implements ContentBlocker {
     private static ContentBlocker56 mInstance = null;
@@ -62,6 +55,7 @@ public class ContentBlocker56 implements ContentBlocker {
         processCustomRules();
         boolean result = processMobileRestrictedApps();
         result |= processWhitelistedApps();
+        result |= processWhitelistedDomains();
         result |= processBlockedDomains();
 
         if (result) {
@@ -179,26 +173,61 @@ public class ContentBlocker56 implements ContentBlocker {
         return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
     }
 
-    private boolean processBlockedDomains() {
-        LogUtils.getInstance().writeInfo("\nProcessing blocked domains...");
+    private boolean processWhitelistedDomains() {
+        LogUtils.getInstance().writeInfo("\nProcessing white-listed domains...");
 
         // Process user-defined white list
+        // 1. URL for all packages: url
+        // 2. URL for individual package: packageName|url
         List<WhiteUrl> whiteUrls = appDatabase.whiteUrlDao().getAll2();
-        Set<String> whiteList = new HashSet<>();
+        Set<String> whiteListAllPackages = new HashSet<>();
+        List<DomainFilterRule> rules = new ArrayList<>();
         for (WhiteUrl whiteUrl : whiteUrls) {
-            final String url = BlockUrlPatternsMatch.getValidatedUrl(whiteUrl.url);
-            whiteList.add(url);
-            LogUtils.getInstance().writeInfo("WhiteUrl: " + url);
+            if (whiteUrl.url.indexOf('|') == -1) {
+                final String url = BlockUrlPatternsMatch.getValidatedUrl(whiteUrl.url);
+                whiteListAllPackages.add(url);
+                LogUtils.getInstance().writeInfo("WhiteUrl: " + url);
+            } else {
+                StringTokenizer tokens = new StringTokenizer(whiteUrl.url, "|");
+                if (tokens.countTokens() == 2) {
+                    final String packageName = tokens.nextToken();
+                    final String url = tokens.nextToken();
+                    final AppIdentity appIdentity = new AppIdentity(packageName, null);
+                    List<String> whiteList = new ArrayList<>();
+                    whiteList.add(url);
+                    rules.add(new DomainFilterRule(appIdentity, new ArrayList<>(), whiteList));
+                    LogUtils.getInstance().writeInfo("PackageName: " + packageName + ", WhiteUrl: " + url);
+                }
+            }
         }
-        LogUtils.getInstance().writeInfo("White list size: " + whiteList.size());
+
+        LogUtils.getInstance().writeInfo("White list for all packages size: " + whiteListAllPackages.size());
+        final AppIdentity appIdentity = new AppIdentity("*", null);
+        rules.add(new DomainFilterRule(appIdentity, new ArrayList<>(), new ArrayList<>(whiteListAllPackages)));
+
+        // Add domain filter rule to Knox Firewall
+        LogUtils.getInstance().writeInfo("Adding domain filter rule to Knox Firewall...");
+        FirewallResponse[] response = null;
+        try {
+            response = mFirewall.addDomainFilterRules(rules);
+            LogUtils.getInstance().writeInfo("Result: " + response[0].getMessage());
+        } catch (SecurityException ex) {
+            // Missing required MDM permission
+            LogUtils.getInstance().writeError("Failed to add domain filter rule to Knox Firewall", ex);
+        }
+        return response != null && (FirewallResponse.Result.SUCCESS == response[0].getResult());
+    }
+
+    private boolean processBlockedDomains() {
+        LogUtils.getInstance().writeInfo("\nProcessing blocked domains...");
 
         // Process blocked URLs
         Set<String> denyList = BlockUrlUtils.getUniqueBlockedUrls(appDatabase, true);
 
-        // Create domain filter rule with deny and white list
+        // Create domain filter rule with deny list
         List<DomainFilterRule> rules = new ArrayList<>();
         AppIdentity appIdentity = new AppIdentity("*", null);
-        rules.add(new DomainFilterRule(appIdentity, new ArrayList<>(denyList), new ArrayList<>(whiteList)));
+        rules.add(new DomainFilterRule(appIdentity, new ArrayList<>(denyList), new ArrayList<>()));
 
         // Add domain filter rule to Knox Firewall
         LogUtils.getInstance().writeInfo("Adding domain filter rule to Knox Firewall...");
