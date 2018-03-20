@@ -29,6 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 public class BlockUrlProviderAdapter extends ArrayAdapter<BlockUrlProvider> {
 
     private static final String TAG = BlockUrlProviderAdapter.class.getCanonicalName();
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public BlockUrlProviderAdapter(Context context, List<BlockUrlProvider> blockUrlProviders) {
         super(context, 0, blockUrlProviders);
@@ -53,13 +54,10 @@ public class BlockUrlProviderAdapter extends ArrayAdapter<BlockUrlProvider> {
             blockUrlProviderTextView.setText(blockUrlProvider.url + "");
             blockUrlCountTextView.setText(blockUrlProvider.count + "");
             urlProviderCheckBox.setChecked(blockUrlProvider.selected);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            lastUpdatedTextView.setText(dateFormat.format(blockUrlProvider.lastUpdated));
+            lastUpdatedTextView.setText(dateFormatter.format(blockUrlProvider.lastUpdated));
             if (!blockUrlProvider.deletable) {
                 deleteUrlImageView.setVisibility(View.GONE);
-                //urlProviderCheckBox.setClickable(false);
             }
-
         }
         urlProviderCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int position2 = (Integer) buttonView.getTag();
