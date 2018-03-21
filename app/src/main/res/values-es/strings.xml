@@ -1,5 +1,5 @@
-<resources>	
-														  
+<resources>
+
     <string name="wait">Espere…</string>
     <string name="Reports">Informes</string>
     <string name="about">Aplicación para smartphones Samsung, que bloquea anuncios y rastreadores en Chrome.
@@ -44,7 +44,7 @@
     </string>
     <string name="activate_knox">Activar Knox</string>
     <string name="no_internet_connection">Parece que su dispositivo, no está conectado
-	a la Red			
+	a la Red
     </string>
     <string name="failed_to_activate_knox_message">Error en la activación de la licencia de Knox
     </string>
@@ -78,16 +78,16 @@
     <string name="change_dns_button">Cambiar DNS</string>
     <string name="dns_1_address">Dirección DNS 1</string>
     <string name="dns_2_address">Dirección DNS 2</string>
-																	 
-																	 
+
+
     <string name="set_dns_button_text">Establecer DNS</string>
     <string name="cancel_text">Cancelar</string>
     <string name="note_that_adhell_must_be_enabled">Usar sólo si se conocen los beneficios o problemas
         que podría causar la edición de los DNS. Tenga en cuenta que Adhell debe estar habilitado.
     </string>
     <string name="restore_defaults">Restaurar valores predeterminados</string>
-																 
-																		
+
+
     <string name="block">Bloquear</string>
     <string name="manage_standard_url_package">Administrar paquete de URL estándar</string>
     <string name="whitelist_ad_url">Añadir URLs a la lista blanca</string>
@@ -96,13 +96,13 @@
         Para que surja efecto Desactive -> Active Adhell después de editar la lista.
     </string>
 
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
     <string name="package_disabler_fragment_title">Deshabilitador de paquetes</string>
     <string name="package_disabler_bottombar_title">Deshabilitador de paquetes</string>
     <string name="app_support_fragment_title">Soporte de aplicaciones</string>
@@ -121,24 +121,24 @@
 
     <string name="hello_blank_fragment">Hola fragmento en blanco</string>
     <string name="support_app_development">Apoye el desarrollo de la aplicación</string>
-																			   
-													  
-																				  
-												 
-																		
-			 
+
+
+
+
+
+
     <string name="add_provider">Añadir proveedor de URL</string>
-																						  
-														   
+
+
     <string name="show_custom_providers">Mostrar proveedores personalizados</string>
     <string name="delete_url">Borrar URL</string>
     <string name="update_all_providers">Actualizar todos los proveedores</string>
-																						 
+
     <string name="app_list_sorted_by_date">Lista ordenada por fecha de instalación</string>
     <string name="app_list_sorted_by_alphabet">Lista ordenada alfabéticamente</string>
     <string name="subscribe">Suscribirse por {{price}} al mes</string>
     <string name="subscribe_three_month">Suscribirse por {{price}} para 3 meses con un descuento del 20%
-    </string>		 
+    </string>
     <string name="premium_subscriber_message">Gracias por ser suscriptor premium</string>
     <string name="already_premium">Ya es Premium</string>
     <string name="custom_url_provider_message">
@@ -146,9 +146,9 @@
         Puede bloquear hasta 15 000 URL.
         Adhell ya tiene un paquete estándar decente, por lo que, en general, no necesita agregar paquetes
         adicionales.
-        Esta función es experimental por ahora y solo para entusiastas.														  
+        Esta función es experimental por ahora y solo para entusiastas.
     </string>
-																				
+
     <string name="your_device_running_old_knox_version">
         Su dispositivo ejecuta una versión anterior de Knox. Esta función puede funcionar de forma inestable. Lo siento
     </string>
@@ -166,13 +166,13 @@
     <string name="sort_by_alphabet">Ordenar alfabéticamente</string>
     <string name="sort_by_install_time">Ordenar por fecha de instalación</string>
     <string name="sort_by_disabled">Mostrar las deshabilitadas primero</string>
-																							
-																						  
-																					
-																										   
-																												  
-																								
-																					   
+
+
+
+
+
+
+
     <string name="app_list_sorted_by_disabled">Las aplicaciones deshabilitadas se muestran primero</string>
     <string name="app_profiles_tab_title">Perfiles</string>
     <string name="app_permissions_tab_title">Permisos</string>
@@ -222,6 +222,13 @@
     <string name="number_of_permissions_restricted">{{numberOfRestrictedPermissions}} permisos
         restringidos
     </string>
+    <string name="mobile_restricter_bottombar_title">Mobile Restricter</string>
+    <string name="mobile_restricter_fragment_title">Mobile Restricter</string>
+    <string name="sort_by_restricted">Sorted by Restricted First</string>
+    <string name="app_list_sorted_by_restricted">Restricted apps are shown first</string>
+    <string name="imported_restricted_from_storage">Importing restricted apps from storage</string>
+    <string name="exported_restricted_to_storage">Restricted apps exported to mobile_restricted_packages.txt</string>
+    <string name="enabled_all_restricted">Enabling all restricted apps</string>
     <string name="show_blocked_urls">Show blocked URLs</string>
     <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
 </resources>

@@ -41,7 +41,7 @@
     </string>
     <string name="activate_knox">Attiva Knox</string>
     <string name="no_internet_connection">Sembra che tu non sia connesso ad internet
-        
+
     </string>
     <string name="failed_to_activate_knox_message">Errore attivazione licenza Knox
     </string>
@@ -147,7 +147,7 @@
     <string name="app_permissions_tab_title">Permessi</string>
     <string name="profiles_explanation">
         Profili: la nuova funzione di Adhell. Agosto 2017
-        
+
         \n\nCon questo nuovo aggiornamento sarà possibile creare vari profili per diverse esigenze.
 
         \n\nCon i Profili puoi gestire le regole del Firewall, le App Disabilitate ed i Permessi App
@@ -156,11 +156,11 @@
         quanti ne volete per poi attivarli o disattivarli in base alle necessità.
 
         \n\nPer esempio, si può creare il profilo \"Bloatware\" e disattivare tutte le app non desiderate.
-        
+
         \nCreare il profilo \"Intrattenimento\" contenente tutte le app e i siti web del genere per poi
         bloccarli tutti quando bisogna concentrarsi sul lavoro.
 
-        \n\nCome predefinito ho creato il profilo \"Default\" per tutti, in cui vi saranno tutte le 
+        \n\nCome predefinito ho creato il profilo \"Default\" per tutti, in cui vi saranno tutte le
         impostazioni correnti (sperando funzioni come previsto). Non è possibile eliminare il profilo
         \"Default\".
 
@@ -189,6 +189,13 @@
     </string>
     <string name="blog">Blog</string>
     <string name="only_for_premium_title">Solo per Utenti Premium</string>
+    <string name="mobile_restricter_bottombar_title">Mobile Restricter</string>
+    <string name="mobile_restricter_fragment_title">Mobile Restricter</string>
+    <string name="sort_by_restricted">Sorted by Restricted First</string>
+    <string name="app_list_sorted_by_restricted">Restricted apps are shown first</string>
+    <string name="imported_restricted_from_storage">Importing restricted apps from storage</string>
+    <string name="exported_restricted_to_storage">Restricted apps exported to mobile_restricted_packages.txt</string>
+    <string name="enabled_all_restricted">Enabling all restricted apps</string>
     <string name="show_blocked_urls">Show blocked URLs</string>
     <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
 

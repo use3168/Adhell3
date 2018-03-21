@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">AdHell 2</string>
+    <string name="app_name" translatable="false">AdHell 3</string>
     <string name="wait">Wait…</string>
     <string name="Reports">Reports</string>
     <string name="about">App for Samsung smartphones that blocks ads and trackers in Chrome. Website
@@ -100,7 +100,7 @@
         download_manager_reference_id
     </string>
 
-    <string name="blocker_fragment_title" translatable="false">Adhell 2</string>
+    <string name="blocker_fragment_title" translatable="false">Adhell 3</string>
     <string name="package_disabler_fragment_title">Package disabler</string>
     <string name="package_disabler_bottombar_title">Package disabler</string>
     <string name="app_support_fragment_title">App support</string>
