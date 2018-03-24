@@ -26,8 +26,10 @@ The host file can be located on internal or external storage.<br/>
 An example to use host.txt file which is located at internal storage:<br/>
 `file:///mnt/sdcard/hosts.txt`
 
-- Show blocked domains<br/>
-Show all domains that are blocked which can be used for checking whether particular URL is in the list.
+- Show the content of host source<br/>
+Show the list of domains of individual host source or the list of all blocked domains from all host sources.<br/>
+This can be useful to check whether particular URL is in the list.<br/>
+The list contains of unique domains.
 
 
 ## FAQ
