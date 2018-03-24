@@ -605,6 +605,9 @@ ad41.atlas.cz
 ad-411.com
 ad47.feeldmc.com
 ad4game.com
+ad4mat.com
+ad4mat.de
+ad4mat.net
 ad4partners.com
 ad5.bannerbank.ru
 ad5.lbn.ru
@@ -1220,6 +1223,7 @@ adstome.com
 adstract.adk2x.com
 adstream.cardboardfish.com
 adstreams.org
+ads-trk.vidible.tv
 adsue.com
 adsupply.com
 adsupplyads.com
@@ -1438,6 +1442,7 @@ aff3.gittigidiyor.com
 aff4.gittigidiyor.com
 affbeat.com
 affbuzzads.com
+affec.tv
 affili.net
 affiliate.*
 affiliatecashpile.net
@@ -3182,6 +3187,7 @@ certifiedwinners.today
 ceskydomov.alias.ngs.modry.cz
 cetrk.com
 cf.kampyle.com
+cf04.kanade-ad.net
 cfasync.ga
 cfcdn.fhserve.com
 cfg.adsmogo.com
@@ -3259,6 +3265,7 @@ choicesurveypanel.com
 choolslot.info
 christianbusinessadvertising.com
 christingel.com
+christmasvideos333.com
 chrome-devtools-frontend.appspot.com
 chtatic.appspot.com
 ci.beap.ad.yieldmanager.net
@@ -3426,7 +3433,7 @@ clk.cloudyisland.com
 clk.kau.li
 clk.pointroll.com
 clk.relestar.com
-clk.verblife-2.com
+clk.verblife-2.co
 clk1005.com
 clkads.com
 clkdeals.com
@@ -4301,6 +4308,7 @@ dsh1ct2zrfakt.cloudfront.net
 dsp.adfarm1.adition.com
 dsp.aitarget.ru
 dsp.gewinnsteigern.com
+dsp.io
 dspfeed.soda.media
 dspserver.adpnut.com
 dt.tongji.linezing.com
@@ -4409,6 +4417,7 @@ ecpmrocks.com
 ecs1.engageya.com
 ed.at.is13.de
 ed.at.thamaster.de
+edaa.eu
 e-debtconsolidation.com
 edensite.net
 edge.bnmla.com
@@ -4469,6 +4478,7 @@ emea.rel.msn.com
 emea-bidder.mathtag.com
 emediate.dk
 emediate.eu
+emerse.com
 eminemticket.freespaces.com
 emisja.adsearch.pl
 emjcd.com
@@ -5358,6 +5368,7 @@ gorodofanosa.ltd
 gostats.com
 got2goshop.com
 goto.mystreamdelivery.xyz
+goto.peak-serving.com
 goto.trafficmultiplier.com
 govahoyuge.itup.pw
 gozatar.com
@@ -5366,6 +5377,7 @@ gp.dejanews.com
 gpr.hu
 grabbit-rabbit.com
 grafstat.ro
+grahamdigital.com
 grapeshot.co.uk
 graphics.adultfriendfinder.com
 graphics.cams.com
@@ -5425,6 +5437,7 @@ gwquuagkjxbq.com
 gwynethpaltrow.ca.tt
 gx-in-f109.1e100.net
 gy7k.net
+gyhujxbptum.com
 gyros.es
 h.irs01.com
 h.live.com
@@ -5917,7 +5930,6 @@ imamby.ru
 imarker.com
 imarker.ru
 imarketservices.com
-imasdk.googleapis.com
 imc.l.qq.com
 imcounting.com
 imesh.com
@@ -6129,6 +6141,8 @@ intelliads.com
 intellichat.com
 intellitxt.com
 intensedigital.adk2x.com
+intentmedia.com
+intentmedia.net
 interac.refund-canada.com
 interactive.forthnet.gr
 interclick.com
@@ -6265,6 +6279,7 @@ jingjia.qq.com
 jinkads.de
 jiruygrsl.com
 jivox.com
+jiycfyytg.com
 jiztini.com
 jj.revolvermaps.com
 jk.mx500.com
@@ -6291,6 +6306,7 @@ journalism.uk.smarttargetting.com
 joxocqrbxe.bid
 jp.10bet.com
 jp.89ads.com
+jp.bnr.co
 jplin.local-finders.com
 jp-pl.vizury.com
 jp-tags.mediaforge.com
@@ -6578,6 +6594,7 @@ leadclick.com
 leader.linkexchange.com
 leadgreed.com
 leadingedgecash.com
+leadplace.fr
 leadpub.com
 leads.383media.com
 leads.demandbase.com
@@ -6604,6 +6621,7 @@ levenshteinanswer.com
 leversions.info
 levexis.com
 lfclktkwnc.com
+lffyoomtjjhvc.com
 lfiles.5min.com
 lfstmedia.com
 lg.brandreachsys.com
@@ -7456,6 +7474,7 @@ monster-ads.net
 monsterpops.com
 moodoo.com.cn
 moodoocrv.com.cn
+mookie1.com
 mopub.com
 moradu.com
 morefastermac.trade
@@ -7591,6 +7610,7 @@ myclicknet.romtelecom.ro
 mycountdown.org
 mycounter.ua
 mydaddy.b0x.com
+mydas.mobi
 mydownloader.net
 myexclusiverewards.com
 myfacefun.com
@@ -8138,7 +8158,6 @@ openinternetexchange.net
 openjobs.com.br
 openload.de
 openload.info
-openload.io
 openoverflow.com
 openx.adfactor.nl
 openx.angelsgroup.org.uk
@@ -8908,6 +8927,7 @@ publiads.com
 public2.zz.ha.cn
 publicidad.elmundo.es
 publicidades.redtotalonline.com
+publicidees.com
 publicis.adcentriconline.com
 publicsuffix.org
 publish.bonzaii.no
@@ -9286,6 +9306,7 @@ rnuhavi.ru
 ro2.biz
 roar.com
 robotreplay.com
+rockabox.co
 rocks.io
 roi.adsonar.com
 roia.biz
@@ -9560,6 +9581,7 @@ save.tv
 save-plan.com
 savings-specials.com
 savings-time.com
+sax.trckonspot.com
 sayac.hurriyet.com.tr
 sayfabulunamadi.com
 saysidewalk.com
@@ -9845,6 +9867,7 @@ sexpartnerx.com
 sex-sex-sex5.com
 sexsponsors.com
 sextracker.com
+sexygirls.download
 sexymarissa.net
 sexysocials.com
 sexystat.com
@@ -10566,6 +10589,7 @@ sv.monkeybroker.net
 sverd.net
 sview.avenuea.com
 sw.interpolls.com
+swahobrjdddri.com
 swan-swan-goose.com
 swapf.com
 sweet55ium55.com
@@ -10858,6 +10882,7 @@ telefonica.webnavegador.com.br
 telemetry.appex.bing.net
 teliad.de
 temelfizik.com
+temelio.com
 tempest.services.disqus.com
 tenbux.somethingawful.com
 tenkulike.com
@@ -10896,6 +10921,7 @@ thatrendsystem.com
 thatsjustgay.com
 thatsphucked.com
 thausredmsmt.com
+theadex.com
 theadgateway.com
 theadhost.com
 theads.me
@@ -11065,6 +11091,7 @@ topping.com.ua
 toprebates.com
 topsafelist.net
 topsearcher.com
+topsellers100.com
 topsir.com
 topsite.lv
 top-site-list.com
@@ -11313,6 +11340,7 @@ tummiarunzpf.com
 tumri.net
 tunhuodaren.com
 tuoi14.net
+turboadv.com
 turdgasm.com
 turn.com
 tusolyut.info
@@ -11346,6 +11374,7 @@ twoj-macbook.pl
 twojszczesliwydzien.com
 twoj-typ.pl
 twoj-voucher.com
+twyn.com
 twyzufga.bid
 tx.micro.net.pk
 tx2.ru
@@ -11403,6 +11432,7 @@ uimg.union178.com
 uimg.xiaoangel.com
 uip.semasio.net
 ujlpbcsx.com
+ujrfwuzv.com
 uk.ads.hexus.net
 uk.adserver.yahoo.com
 uk.i1.yimg.com
@@ -11430,6 +11460,7 @@ umekana.ru
 ums.adtechjp.com
 ums.adtechus.com
 unarmedindustry.com
+undertone.com
 undertonenetworks.com
 uniclick.openv.com
 unijfkajh554.co.cc
@@ -11625,6 +11656,7 @@ vast.tubemogul.com
 vast.vertamedia.com
 vast.yashi.com
 vatrack.hinet.net
+vbtrax.com
 vcavpwzzx.bid
 vce007.com
 vcentry2.valuecommerce.ne.jp
@@ -11746,6 +11778,7 @@ vk.18sexporn.ru
 vladina.net
 vlog.heraldcorp.com
 vmcsatellite.com
+vmmpxl.com
 vmp.boldchat.com
 vms.boldchat.com
 vmss.boldchat.com
@@ -12083,6 +12116,7 @@ ws-gateway.com
 wsp.adskeeper.co.uk
 wsp.mgid.com
 wt.o.nytimes.com
+wt-eu02.net
 wtlive.com
 wtnj.worldnow.com
 wtp101.com
@@ -12155,6 +12189,7 @@ xclicks.net
 xcnn.com
 xcr-286.com
 xdating.com
+xdevice.trafficgate.net
 xdtu9.trackvoluum.com
 xertive.com
 xfotosx01.fromru.su
@@ -12377,6 +12412,7 @@ zb1.zeroredirect1.com
 zbcsmoopwqyze.com
 zbecpoboc.com
 zbippirad.info
+zbqblhqlrm.com
 zc1.delta-boa.com
 zc1.zeroredirect11.com
 zdads.e-media.com
