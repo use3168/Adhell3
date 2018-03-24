@@ -1,6 +1,8 @@
 package com.fusionjack.adhell3.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fusionjack.adhell3.App;
 import com.fusionjack.adhell3.R;
@@ -19,6 +22,7 @@ import com.fusionjack.adhell3.db.entity.BlockUrlProvider;
 import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 import com.fusionjack.adhell3.utils.BlockUrlUtils;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -64,24 +68,8 @@ public class BlockUrlProviderAdapter extends ArrayAdapter<BlockUrlProvider> {
             int position2 = (Integer) buttonView.getTag();
             BlockUrlProvider blockUrlProvider2 = getItem(position2);
             if (blockUrlProvider2 != null) {
-                blockUrlProvider2.selected = isChecked;
-                Maybe.fromCallable(() -> {
-                    AppDatabase mDb = AppDatabase.getAppDatabase(App.get().getApplicationContext());
-                    mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider2);
-
-                    if (isChecked) {
-                        int totalUrls = new HashSet<>(BlockUrlUtils.getAllBlockedUrls(mDb)).size();
-                        if (totalUrls > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
-                            blockUrlProvider2.selected = false;
-                            mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider2);
-                        }
-                    }
-
-                    return null;
-                })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe();
+                AppDatabase appDatabase = AppDatabase.getAppDatabase(App.get().getApplicationContext());
+                new GetAllBlockedUrlsAsyncTask(getContext(), isChecked, blockUrlProvider2, appDatabase).execute();
             }
         });
 
@@ -101,5 +89,50 @@ public class BlockUrlProviderAdapter extends ArrayAdapter<BlockUrlProvider> {
 
         });
         return convertView;
+    }
+
+    private static class GetAllBlockedUrlsAsyncTask extends AsyncTask<Void, Void, Integer> {
+        private WeakReference<Context> contextReference;
+        private boolean isChecked;
+        private BlockUrlProvider provider;
+        private AppDatabase appDatabase;
+
+        GetAllBlockedUrlsAsyncTask(Context context, boolean isChecked, BlockUrlProvider provider, AppDatabase appDatabase) {
+            this.contextReference = new WeakReference<>(context);
+            this.isChecked = isChecked;
+            this.provider = provider;
+            this.appDatabase = appDatabase;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... o) {
+            Context context = contextReference.get();
+            if (context != null) {
+                provider.selected = isChecked;
+                appDatabase.blockUrlProviderDao().updateBlockUrlProviders(provider);
+                int totalUrls = new HashSet<>(BlockUrlUtils.getAllBlockedUrls(appDatabase)).size();
+                if (totalUrls > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
+                    provider.selected = false;
+                    appDatabase.blockUrlProviderDao().updateBlockUrlProviders(provider);
+                }
+                return totalUrls;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer totalUrls) {
+            Context context = contextReference.get();
+            if (context != null && totalUrls != null) {
+                String message;
+                if (totalUrls > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
+                    message = String.format("The total number of unique URLs %d exceeds the maximum limit of %d",
+                                    totalUrls, AdhellAppIntegrity.BLOCK_URL_LIMIT);
+                } else {
+                    message = String.format("Total number of unique URLs: %d", totalUrls);
+                }
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
