@@ -222,7 +222,7 @@ public class ContentBlocker56 implements ContentBlocker {
         LogUtils.getInstance().writeInfo("\nProcessing blocked domains...");
 
         // Process blocked URLs
-        Set<String> denyList = BlockUrlUtils.getUniqueBlockedUrls(appDatabase, true);
+        Set<String> denyList = BlockUrlUtils.getUniqueBlockedUrls(appDatabase);
 
         // Create domain filter rule with deny list
         List<DomainFilterRule> rules = new ArrayList<>();

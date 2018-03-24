@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 public class BlockUrlUtils {
-    private static final String TAG = BlockUrlUtils.class.getCanonicalName();
 
     @NonNull
     public static List<BlockUrl> loadBlockUrls(BlockUrlProvider blockUrlProvider) throws IOException, URISyntaxException {
@@ -37,7 +36,7 @@ public class BlockUrlUtils {
             bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         }
 
-        Set<BlockUrl> blockUrls = new HashSet<>();
+        List<BlockUrl> blockUrls = new ArrayList<>();
         String inputLine;
         while ((inputLine = bufferedReader.readLine()) != null) {
             inputLine = getDomain(inputLine).trim().toLowerCase();
@@ -47,7 +46,7 @@ public class BlockUrlUtils {
             }
         }
         bufferedReader.close();
-        return new ArrayList<>(blockUrls);
+        return blockUrls;
     }
 
     private static String getDomain(String inputLine) {
@@ -66,7 +65,7 @@ public class BlockUrlUtils {
                 .replaceAll("^(www)([0-9]{0,3})?(\\.)","");
     }
 
-    public static Set<String> getUniqueBlockedUrls(AppDatabase appDatabase, boolean logging) {
+    public static Set<String> getUniqueBlockedUrls(AppDatabase appDatabase) {
         Set<String> denyList = new HashSet<>();
 
         // Process user-defined blocked URLs
@@ -76,35 +75,50 @@ public class BlockUrlUtils {
             if (userBlockUrl.url.indexOf('|') == -1) {
                 final String url = BlockUrlPatternsMatch.getValidatedUrl(userBlockUrl.url);
                 denyList.add(url);
-                if (logging) LogUtils.getInstance().writeInfo("UserBlockUrl: " + url);
+                LogUtils.getInstance().writeInfo("UserBlockUrl: " + url);
                 userBlockUrlCount++;
             }
         }
-        if (logging) LogUtils.getInstance().writeInfo("User blocked URL size: " + userBlockUrlCount);
+        LogUtils.getInstance().writeInfo("User blocked URL size: " + userBlockUrlCount);
 
         // Process all blocked URL providers
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
-            if (logging) LogUtils.getInstance().writeInfo("Included url provider: " + blockUrlProvider.url + ", size: " + blockUrls.size());
+            LogUtils.getInstance().writeInfo("Included url provider: " + blockUrlProvider.url + ", size: " + blockUrls.size());
 
             for (BlockUrl blockUrl : blockUrls) {
                 denyList.add(BlockUrlPatternsMatch.getValidatedUrl(blockUrl.url));
             }
         }
 
-        if (logging) LogUtils.getInstance().writeInfo("Total unique domains to block: " + denyList.size());
+        LogUtils.getInstance().writeInfo("Total unique domains to block: " + denyList.size());
         return denyList;
     }
 
-    public static Set<String> getMatchBlockedUrls(AppDatabase appDatabase, String filterText) {
-        Set<String> result = new HashSet<>();
-
-        List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getByUrl(filterText);
-        for (UserBlockUrl userBlockUrl : userBlockUrls) {
-            result.add(userBlockUrl.url);
+    public static List<String> getAllBlockedUrls(AppDatabase appDatabase) {
+        List<String> result = new ArrayList<>();
+        List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
+        for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
+            List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(blockUrlProvider.id);
+            for (BlockUrl blockUrl : blockUrls) {
+                result.add(blockUrl.url);
+            }
         }
+        return result;
+    }
 
+    public static List<String> getBlockedUrls(long providerId, AppDatabase appDatabase) {
+        List<String> result = new ArrayList<>();
+        List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getUrlsByProviderId(providerId);
+        for (BlockUrl blockUrl : blockUrls) {
+            result.add(blockUrl.url);
+        }
+        return result;
+    }
+
+    public static List<String> getBlockedUrls(String filterText, AppDatabase appDatabase) {
+        List<String> result = new ArrayList<>();
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
             List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getByUrl(blockUrlProvider.id, filterText);
@@ -112,7 +126,6 @@ public class BlockUrlUtils {
                 result.add(blockUrl.url);
             }
         }
-
         return result;
     }
 

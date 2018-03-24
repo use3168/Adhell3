@@ -59,10 +59,14 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
             Maybe.fromCallable(() -> {
                 List<BlockUrlProvider> providers = mDb.blockUrlProviderDao().getAll2();
                 BlockUrlProvider provider = providers.get(position);
-                List<BlockUrl> blockUrls = mDb.blockUrlDao().getUrlsByProviderId(provider.id);
+
+                Bundle bundle = new Bundle();
+                bundle.putLong("provider", provider.id);
+                ShowBlockUrlFragment fragment = new ShowBlockUrlFragment();
+                fragment.setArguments(bundle);
 
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentContainer, new ShowBlockUrlFragment(blockUrls));
+                fragmentTransaction.replace(R.id.fragmentContainer, fragment);
                 fragmentTransaction.addToBackStack("manage_url_to_add_custom");
                 fragmentTransaction.commit();
 

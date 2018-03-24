@@ -20,6 +20,7 @@ import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 import com.fusionjack.adhell3.utils.BlockUrlUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.List;
 
 import io.reactivex.Maybe;
@@ -69,7 +70,7 @@ public class BlockUrlProviderAdapter extends ArrayAdapter<BlockUrlProvider> {
                     mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider2);
 
                     if (isChecked) {
-                        int totalUrls = BlockUrlUtils.getUniqueBlockedUrls(mDb, false).size();
+                        int totalUrls = new HashSet<>(BlockUrlUtils.getAllBlockedUrls(mDb)).size();
                         if (totalUrls > AdhellAppIntegrity.BLOCK_URL_LIMIT) {
                             blockUrlProvider2.selected = false;
                             mDb.blockUrlProviderDao().updateBlockUrlProviders(blockUrlProvider2);
