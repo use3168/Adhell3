@@ -4,6 +4,8 @@ import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,11 +39,12 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
     private EditText blockUrlProviderEditText;
     private Button addBlockUrlProviderButton;
     private ListView blockListView;
-
+    private FragmentManager fragmentManager;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDb = AppDatabase.getAppDatabase(App.get().getApplicationContext());
+        fragmentManager = getActivity().getSupportFragmentManager();
     }
 
     @Nullable
@@ -51,6 +54,25 @@ public class CustomBlockUrlProviderFragment extends LifecycleFragment {
         blockUrlProviderEditText = (EditText) view.findViewById(R.id.blockUrlProviderEditText);
         addBlockUrlProviderButton = (Button) view.findViewById(R.id.addBlockUrlProviderButton);
         blockListView = (ListView) view.findViewById(R.id.blockUrlProviderListView);
+
+        blockListView.setOnItemClickListener((parent, view1, position, id) -> {
+            Maybe.fromCallable(() -> {
+                List<BlockUrlProvider> providers = mDb.blockUrlProviderDao().getAll2();
+                BlockUrlProvider provider = providers.get(position);
+                List<BlockUrl> blockUrls = mDb.blockUrlDao().getUrlsByProviderId(provider.id);
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainer, new ShowBlockUrlFragment(blockUrls));
+                fragmentTransaction.addToBackStack("manage_url_to_add_custom");
+                fragmentTransaction.commit();
+
+                return null;
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+        });
+
         Button updateBlockUrlProvidersButton = (Button) view.findViewById(R.id.updateBlockUrlProvidersButton);
         updateBlockUrlProvidersButton.setOnClickListener(v -> {
             // TODO: getAll all

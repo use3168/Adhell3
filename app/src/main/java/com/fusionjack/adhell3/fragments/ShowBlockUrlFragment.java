@@ -1,5 +1,6 @@
 package com.fusionjack.adhell3.fragments;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LifecycleFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,13 +17,25 @@ import android.widget.TextView;
 
 import com.fusionjack.adhell3.R;
 import com.fusionjack.adhell3.db.AppDatabase;
+import com.fusionjack.adhell3.db.entity.BlockUrl;
 import com.fusionjack.adhell3.utils.BlockUrlUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class ShowBlockUrlFragment extends LifecycleFragment {
     private AppDatabase appDatabase;
+    private List<BlockUrl> blockedUrlList;
+
+    public ShowBlockUrlFragment() {
+        blockedUrlList = null;
+    }
+
+    @SuppressLint("ValidFragment")
+    public ShowBlockUrlFragment(List<BlockUrl> list) {
+        blockedUrlList = list;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,15 +49,23 @@ public class ShowBlockUrlFragment extends LifecycleFragment {
         View view = inflater.inflate(R.layout.fragment_show_blocked_urls, container, false);
         ListView listView = view.findViewById(R.id.blocked_url_list);
 
-        new AsyncTask<Void, Void, Set<String>>() {
+        new AsyncTask<Void, Void, List<String>>() {
             @Override
-            protected Set<String> doInBackground(Void... o) {
-                return BlockUrlUtils.getUniqueBlockedUrls(appDatabase, false);
+            protected List<String> doInBackground(Void... o) {
+                if (blockedUrlList == null) {
+                    return new ArrayList<>(BlockUrlUtils.getUniqueBlockedUrls(appDatabase, false));
+                } else {
+                    List<String> list = new ArrayList<>();
+                    for (BlockUrl blockUrl : blockedUrlList) {
+                        list.add(blockUrl.url);
+                    }
+                    return list;
+                }
             }
 
             @Override
-            protected void onPostExecute(Set<String> blockedUrls) {
-                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<>(blockedUrls));
+            protected void onPostExecute(List<String> blockedUrls) {
+                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, blockedUrls);
                 listView.setAdapter(itemsAdapter);
 
                 TextView totalBlockedUrls = view.findViewById(R.id.total_blocked_urls);
