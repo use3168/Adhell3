@@ -6,6 +6,8 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
+import android.os.Environment;
+import android.os.LocaleList;
 
 import com.fusionjack.adhell3.db.dao.AppInfoDao;
 import com.fusionjack.adhell3.db.dao.AppPermissionDao;
@@ -36,6 +38,8 @@ import com.fusionjack.adhell3.db.migration.Migration_19_20;
 import com.fusionjack.adhell3.db.migration.Migration_20_21;
 import com.fusionjack.adhell3.db.migration.Migration_21_22;
 
+import java.io.File;
+
 @Database(entities = {
         AppInfo.class,
         AppPermission.class,
@@ -61,9 +65,19 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public static AppDatabase getAppDatabase(Context context) {
         if (INSTANCE == null) {
+            String location;
+            File sd = Environment.getExternalStorageDirectory();
+            if (sd.canWrite()) {
+                File adhell3 = new File(sd, "adhell3");
+                File db = new File(adhell3, "adhell-database");
+                location = db.getAbsolutePath();
+            } else {
+                location = "adhell-database";
+            }
+
             INSTANCE =
                     Room.databaseBuilder(context.getApplicationContext(),
-                            AppDatabase.class, "adhell-database")
+                            AppDatabase.class, location)
                             .addMigrations(MIGRATION_14_15)
                             .addMigrations(MIGRATION_15_16)
                             .addMigrations(MIGRATION_16_17)

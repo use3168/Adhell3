@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,12 +32,6 @@ import com.fusionjack.adhell3.db.AppDatabase;
 import com.fusionjack.adhell3.db.entity.AppInfo;
 import com.fusionjack.adhell3.utils.AppsListDBInitializer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -164,86 +157,11 @@ public class MobileRestricterFragment extends LifecycleFragment {
                 editText.setText("");
                 loadApplicationsList(true);
                 break;
-            case R.id.restricter_import_storage:
-                Toast.makeText(context, getString(R.string.imported_restricted_from_storage), Toast.LENGTH_SHORT).show();
-                importList();
-                break;
-            case R.id.restricter_export_storage:
-                Toast.makeText(context, getString(R.string.exported_restricted_to_storage), Toast.LENGTH_SHORT).show();
-                exportList();
-                break;
             case R.id.restricter_enable_all:
                 Toast.makeText(context, getString(R.string.enabled_all_restricted), Toast.LENGTH_SHORT).show();
                 enableAllPackages();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private void importList() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... o) {
-                File file = new File(Environment.getExternalStorageDirectory(), "mobile_restricted_packages.txt");
-
-                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        try {
-                            AppInfo appInfo = mDb.applicationInfoDao().getByPackageName(line);
-                            appInfo.mobileRestricted = true;
-                            mDb.applicationInfoDao().insert(appInfo);
-                        }
-                        catch (Exception e) {
-                            // Ignore any potential errors
-                        }
-                    }
-                }
-                catch (IOException e) {
-                    Log.e("Exception", "File write failed: " + e.toString());
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void o) {
-                super.onPostExecute(o);
-                loadApplicationsList(false);
-            }
-        }.execute();
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private void exportList() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... o) {
-                File file = new File(Environment.getExternalStorageDirectory(), "mobile_restricted_packages.txt");
-                List<AppInfo> restrictedAppList = mDb.applicationInfoDao().getMobileRestrictedApps();
-
-                try {
-                    FileOutputStream stream = new FileOutputStream(file);
-                    OutputStreamWriter writer = new OutputStreamWriter(stream);
-
-                    writer.write("");
-
-                    for (AppInfo app : restrictedAppList) {
-                        writer.append(app.packageName + "\n");
-                    }
-
-                    writer.close();
-                    stream.flush();
-                    stream.close();
-                }
-                catch (IOException e) {
-                    Log.e("Exception", "File write failed: " + e.toString());
-                }
-
-                return null;
-            }
-        }.execute();
     }
 
     @SuppressLint("StaticFieldLeak")
