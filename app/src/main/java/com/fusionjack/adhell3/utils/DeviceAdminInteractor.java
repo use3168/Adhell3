@@ -243,4 +243,38 @@ public class DeviceAdminInteractor {
         Log.i(TAG, "Knox is supported");
         return true;
     }
+
+    public String getLicenseActivationErrorMessage(int errorCode) {
+        if (errorCode == EnterpriseLicenseManager.ERROR_NULL_PARAMS) {
+            return "Null params";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_UNKNOWN) {
+            return "Unknown";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_INVALID_LICENSE) {
+            return "Invalid license";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_NO_MORE_REGISTRATION) {
+            return "No more registration";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_LICENSE_TERMINATED) {
+            return "License terminated";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_INVALID_PACKAGE_NAME) {
+            return "Invalid package name";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_NOT_CURRENT_DATE) {
+            return "Not current date";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_SIGNATURE_MISMATCH) {
+            return "Signature mismatch";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_VERSION_CODE_MISMATCH) {
+            return "Version code mismatch";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_INTERNAL) {
+            return "Internal";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_INTERNAL_SERVER) {
+            return "Internak server";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_NETWORK_DISCONNECTED) {
+            return "Network disconnected";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_NETWORK_GENERAL) {
+            return "Network general";
+        } else if (errorCode == EnterpriseLicenseManager.ERROR_USER_DISAGREES_LICENSE_AGREEMENT) {
+            return "User disagrees license agreement";
+        } else {
+            return "";
+        }
+    }
 }

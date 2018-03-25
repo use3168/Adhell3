@@ -1,6 +1,7 @@
 package com.fusionjack.adhell3.dialogfragment;
 
 
+import android.app.enterprise.license.EnterpriseLicenseManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -146,7 +147,14 @@ public class AdhellTurnOnDialogFragment extends DialogFragment {
                     activateKnoxButton.setText("License Activated");
                     Log.d(TAG, "License activated");
                 } else {
-                    Toast.makeText(context, "License activation failed. Try again", Toast.LENGTH_LONG).show();
+                    if (intent.getExtras() != null) {
+                        int errorCode = intent.getIntExtra(EnterpriseLicenseManager.EXTRA_LICENSE_ERROR_CODE, 0);
+                        String errorMessage = deviceAdminInteractor.getLicenseActivationErrorMessage(errorCode);
+                        Toast.makeText(context, "License activation failed: " + errorMessage, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(context, "License activation failed.", Toast.LENGTH_LONG).show();
+                    }
+
                     Log.w(TAG, "License activation failed");
                     activateKnoxButton.setEnabled(true); // Allow the user to try again
                     activateKnoxButton.setText("Activate License"); // Allow the user to try again
