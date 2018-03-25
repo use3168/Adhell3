@@ -31,6 +31,10 @@ Show the list of domains of individual host source or the list of all blocked do
 This can be useful to check whether particular URL is in the list.<br/>
 The list contains of unique domains.
 
+- Retain data across installations<br/>
+Adhell is usually generated with a unique package name. For the users that don't build Adhell with Android Studio, they cannot use the same package name. This means that they need to reinstall Adhell every times there is a new version and on every installation, they need to input the same data again and again. <br/>
+With this feature, there is no need to export or import functionality again. The data will be kept on internal storage and by next installation, the same data will be used.
+
 
 ## FAQ
 ### How Adhell works?
