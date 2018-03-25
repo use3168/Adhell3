@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -7,26 +8,25 @@
         android:id="@+id/lastDayInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_gravity="top"
         android:text="@string/last_day_blocked"
         android:textColor="#000000"
-        android:textSize="@dimen/text_small_size"
-        android:paddingBottom="@dimen/text_mizerable_size"/>
+        android:textSize="@dimen/text_small_size" />
 
-    <TextView
-        android:id="@+id/lastDayBlockedTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/lastDayInfoTextView"
-        android:layout_toRightOf="@+id/lastDayInfoTextView"
-        android:textColor="#000000"
-        android:textSize="@dimen/text_small_size"
-        android:paddingBottom="@dimen/text_mizerable_size"/>
-
-    <ListView
-        android:id="@+id/blockedDomainsListView"
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/lastDayBlockedTextView"
-        android:scrollbars="vertical" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp" >
 
-</RelativeLayout>
+        <ListView
+            android:id="@+id/blockedDomainsListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</FrameLayout>
