@@ -21,7 +21,6 @@ import com.fusionjack.adhell3.R;
 import com.fusionjack.adhell3.blocker.ContentBlocker;
 import com.fusionjack.adhell3.blocker.ContentBlocker56;
 import com.fusionjack.adhell3.blocker.ContentBlocker57;
-import com.fusionjack.adhell3.utils.BlockedDomainAlarmHelper;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 
 import io.reactivex.Observable;
@@ -44,30 +43,18 @@ public class BlockerFragment extends LifecycleFragment {
                 // Enabled. Trying to disable
                 Log.d(TAG, "Firewall policy was enabled, trying to disable");
                 contentBlocker.disableBlocker();
-                if (contentBlocker instanceof ContentBlocker56
-                        || contentBlocker instanceof ContentBlocker57) {
-                    BlockedDomainAlarmHelper.cancelAlarm();
-                }
                 emitter.onNext(false);
             } else {
                 contentBlocker.disableBlocker();
                 // Disabled. Enabling
                 Log.d(TAG, "Policy disabled, trying to enable");
                 contentBlocker.enableBlocker();
-                if (contentBlocker instanceof ContentBlocker56
-                        || contentBlocker instanceof ContentBlocker57) {
-                    BlockedDomainAlarmHelper.scheduleAlarm();
-                }
                 emitter.onNext(true);
             }
             emitter.onComplete();
         } catch (Exception e) {
             Log.e(TAG, "Failed to turn on ad blocker", e);
             contentBlocker.disableBlocker();
-            if (contentBlocker instanceof ContentBlocker56
-                    || contentBlocker instanceof ContentBlocker57) {
-                BlockedDomainAlarmHelper.cancelAlarm();
-            }
             emitter.onNext(false);
             emitter.onComplete();
         }

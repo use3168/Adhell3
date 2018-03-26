@@ -19,19 +19,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name="com.fusionjack.adhell3.MainActivity"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <service
-            android:name="com.fusionjack.adhell3.service.BlockedDomainService"
-            android:exported="false"/>
 
         <receiver
             android:name="com.fusionjack.adhell3.receiver.CustomDeviceAdminReceiver"
@@ -41,24 +37,15 @@
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/enterprise_device_admin"/>
-
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
             </intent-filter>
         </receiver>
-        <receiver
-            android:name="com.fusionjack.adhell3.receiver.BlockedDomainAlarmReceiver"
-            android:process=":remote"/>
-        <receiver android:name="com.fusionjack.adhell3.receiver.BootBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
+
         <receiver android:name="com.fusionjack.adhell3.receiver.ApplicationsListChangedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
-
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>

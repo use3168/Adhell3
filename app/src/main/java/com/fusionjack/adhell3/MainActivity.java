@@ -14,9 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.fusionjack.adhell3.blocker.ContentBlocker;
-import com.fusionjack.adhell3.blocker.ContentBlocker56;
-import com.fusionjack.adhell3.blocker.ContentBlocker57;
 import com.fusionjack.adhell3.dialogfragment.AdhellNotSupportedDialogFragment;
 import com.fusionjack.adhell3.dialogfragment.AdhellTurnOnDialogFragment;
 import com.fusionjack.adhell3.dialogfragment.NoInternetConnectionDialogFragment;
@@ -25,7 +22,6 @@ import com.fusionjack.adhell3.fragments.AdhellPermissionInfoFragment;
 import com.fusionjack.adhell3.fragments.BlockerFragment;
 import com.fusionjack.adhell3.fragments.MobileRestricterFragment;
 import com.fusionjack.adhell3.fragments.PackageDisablerFragment;
-import com.fusionjack.adhell3.service.BlockedDomainService;
 import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 import com.roughike.bottombar.BottomBar;
@@ -139,14 +135,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.d(TAG, "Everything is okay");
 
-
-        ContentBlocker contentBlocker = mAdminInteractor.getContentBlocker();
-        if (contentBlocker != null && contentBlocker.isEnabled() && (contentBlocker instanceof ContentBlocker56
-                || contentBlocker instanceof ContentBlocker57)) {
-            Intent i = new Intent(App.get().getApplicationContext(), BlockedDomainService.class);
-            i.putExtra("launchedFrom", "main-activity");
-            App.get().getApplicationContext().startService(i);
-        }
         Intent intent = getIntent();
         boolean bxIntegration = intent.getBooleanExtra("bxIntegration", false);
         if (bxIntegration) {

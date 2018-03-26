@@ -14,19 +14,33 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fusionjack.adhell3.App;
 import com.fusionjack.adhell3.R;
 import com.fusionjack.adhell3.adapter.ReportBlockedUrlAdapter;
 import com.fusionjack.adhell3.db.AppDatabase;
 import com.fusionjack.adhell3.db.entity.ReportBlockedUrl;
+import com.sec.enterprise.firewall.DomainFilterReport;
+import com.sec.enterprise.firewall.Firewall;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.inject.Inject;
 
 
 public class AdhellReportsFragment extends LifecycleFragment {
     private AppCompatActivity parentActivity;
     private AppDatabase appDatabase;
+
+    @Nullable
+    @Inject
+    Firewall firewall;
+
+    public AdhellReportsFragment() {
+        App.get().getAppComponent().inject(this);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,27 +60,52 @@ public class AdhellReportsFragment extends LifecycleFragment {
         View view = inflater.inflate(R.layout.fragment_adhell_reports, container, false);
         SwipeRefreshLayout swipeContainer = view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(() -> {
-            new RefreshAsynckTask(getContext(), appDatabase).execute();
+            new RefreshAsynckTask(getContext(), firewall, appDatabase).execute();
         });
 
-        new RefreshAsynckTask(getContext(), appDatabase).execute();
+        new RefreshAsynckTask(getContext(), firewall, appDatabase).execute();
 
         return view;
     }
 
     private static class RefreshAsynckTask extends AsyncTask<Void, Void, List<ReportBlockedUrl>> {
         private WeakReference<Context> contextReference;
+        private Firewall firewall;
         private AppDatabase appDatabase;
 
-        RefreshAsynckTask(Context context, AppDatabase appDatabase) {
+        RefreshAsynckTask(Context context, Firewall firewall, AppDatabase appDatabase) {
             this.contextReference = new WeakReference<>(context);
+            this.firewall = firewall;
             this.appDatabase = appDatabase;
         }
 
         @Override
         protected List<ReportBlockedUrl> doInBackground(Void... voids) {
-            return appDatabase.reportBlockedUrlDao().getReportBlockUrlBetween(
-                    yesterday(), System.currentTimeMillis());
+            List<ReportBlockedUrl> reportBlockedUrls = new ArrayList<>();
+            List<DomainFilterReport> reports = firewall.getDomainFilterReport(null);
+            if (reports == null) {
+                return reportBlockedUrls;
+            }
+
+            long yesterday = yesterday();
+            appDatabase.reportBlockedUrlDao().deleteBefore(yesterday);
+
+            ReportBlockedUrl lastBlockedUrl = appDatabase.reportBlockedUrlDao().getLastBlockedDomain();
+            long lastBlockedTimestamp = 0;
+            if (lastBlockedUrl != null) {
+                lastBlockedTimestamp = lastBlockedUrl.blockDate / 1000;
+            }
+
+            for (DomainFilterReport b : reports) {
+                if (b.getTimeStamp() > lastBlockedTimestamp) {
+                    ReportBlockedUrl reportBlockedUrl =
+                            new ReportBlockedUrl(b.getDomainUrl(), b.getPackageName(), b.getTimeStamp() * 1000);
+                    reportBlockedUrls.add(reportBlockedUrl);
+                }
+            }
+            appDatabase.reportBlockedUrlDao().insertAll(reportBlockedUrls);
+
+            return appDatabase.reportBlockedUrlDao().getReportBlockUrlBetween(yesterday(), System.currentTimeMillis());
         }
 
         @Override

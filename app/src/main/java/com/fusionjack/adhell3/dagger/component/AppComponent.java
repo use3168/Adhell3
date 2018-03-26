@@ -8,11 +8,11 @@ import com.fusionjack.adhell3.dagger.module.AppModule;
 import com.fusionjack.adhell3.dagger.module.EnterpriseModule;
 import com.fusionjack.adhell3.dagger.module.NetworkModule;
 import com.fusionjack.adhell3.dagger.scope.AdhellApplicationScope;
+import com.fusionjack.adhell3.fragments.AdhellReportsFragment;
 import com.fusionjack.adhell3.fragments.BlockedUrlSettingFragment;
 import com.fusionjack.adhell3.fragments.BlockerFragment;
 import com.fusionjack.adhell3.fragments.MobileRestricterFragment;
 import com.fusionjack.adhell3.fragments.PackageDisablerFragment;
-import com.fusionjack.adhell3.service.BlockedDomainService;
 import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 import com.fusionjack.adhell3.utils.AppsListDBInitializer;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
@@ -30,7 +30,7 @@ public interface AppComponent {
 
     void inject(ContentBlocker20 contentBlocker20);
 
-    void inject(BlockedDomainService blockedDomainService);
+    void inject(AdhellReportsFragment adhellReportsFragment);
 
     void inject(BlockedUrlSettingFragment blockedUrlSettingFragment);
 
