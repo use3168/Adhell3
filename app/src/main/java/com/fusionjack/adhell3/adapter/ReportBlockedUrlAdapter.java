@@ -44,6 +44,7 @@ public class ReportBlockedUrlAdapter extends ArrayAdapter<ReportBlockedUrl> {
 
         ImageView blockedDomainIconImageView = convertView.findViewById(R.id.blockedDomainIconImageView);
         TextView blockedDomainAppNameTextView = convertView.findViewById(R.id.blockedDomainAppNameTextView);
+        TextView blockedDomainUrlTextView = convertView.findViewById(R.id.blockedDomainUrlTextView);
         TextView blockedDomainTimeTextView = convertView.findViewById(R.id.blockedDomainTimeTextView);
 
         String packageName = reportBlockedUrl.packageName;
@@ -65,7 +66,8 @@ public class ReportBlockedUrlAdapter extends ArrayAdapter<ReportBlockedUrl> {
         if (icon != null) {
             blockedDomainIconImageView.setImageDrawable(icon);
         }
-        blockedDomainAppNameTextView.setText(applicationName.concat("\n").concat(reportBlockedUrl.url));
+        blockedDomainAppNameTextView.setText(applicationName);
+        blockedDomainUrlTextView.setText(reportBlockedUrl.url);
         blockedDomainTimeTextView.setText(dateFormatter.format(reportBlockedUrl.blockDate));
 
         return convertView;
