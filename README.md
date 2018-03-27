@@ -1,7 +1,7 @@
 # Adhell3
 The original Adhell app was marketized as a system wide adblocking app without VPN, but it can do more than just blocking ads. It can also disable system apps and disable app's permissions.<br/>
 Adhell is working by utilizing Samsung's Knox SDK. Therefore, it only works on Samsung devices.<br/>
-Within this SDK, there is a firewall function which can be used to block domains or define firewall rule to block a particular port for a specific app.<br/>
+Within this SDK, there is a firewall function which can be used to block domains or define firewall rule to block a particular port for a specific app or restrict the internet access.<br/>
 Adhell is merely a front-end for Samsung Knox SDK which initilizes the Knox with what you define (blocked domains, firewall rules, whitelists, disabled apps, etc). Therefore it doesn't run in the background.<br/>
 
 Adhell was developed by Samsung's developer. After he was forced to remove the code from internet by Samsung, FiendFyre was stepped up by providing the Adhell2. But after a while, it is also discontinued.<br/>
@@ -9,7 +9,7 @@ Adhell3 is an extension of previous discontinued Adhell2 app with more additiona
 
 ## Features
 - Mobile internet blocker<br/>
-Disable internet completely when you are on mobile for specific apps.
+Disable internet access completely when you are on mobile for specific apps. This can be useful to avoid watching video accidentally by using mobile data.
 
 - Custom deny firewall rule<br/>
 This can be used for example to define a custom firewall rule to block ads for Chrome app on port 53 for all ip addresses:<br/>
@@ -24,7 +24,7 @@ Example: Block the domain `graph.facebook.com` system wide, but allows it for Fa
 - Support local host source<br/>
 The host file can be located on internal or external storage.<br/>
 An example to use host.txt file which is located at internal storage:<br/>
-`file:///mnt/sdcard/hosts.txt`
+    `file:///mnt/sdcard/hosts.txt`
 
 - Show the content of host source<br/>
 Show the list of domains of individual host source or the list of all blocked domains from all host sources.<br/>
@@ -35,6 +35,25 @@ The list contains of unique domains.
 Adhell is usually generated with a unique package name. For the users that don't build Adhell with Android Studio, they cannot use the same package name. This means that they need to reinstall Adhell every times there is a new version and on every installation, they need to input the same data again and again. <br/>
 With this feature, there is no need to export or import functionality again. The data will be kept on internal storage and by next installation, the same data will be used.
 
+## Prerequisite for building apk
+### Source code
+- Clone the project with `git clone git@github.com:fusionjack/Adhell3.git adhell3`
+- Download the source code as a zip file: https://github.com/fusionjack/Adhell3/archive/master.zip
+- Set `applicationId` with a valid package name in `app\build.gradle`, e.g.: com.dhf.erz58384
+
+### Android Studio
+- Download and install latest Android Studio from https://developer.android.com/studio/index.html
+- Open the downloaded project in Android Studio
+- Install missing SDK and build-tools
+
+## How to build apk
+- Update the source code with `git pull --rebase` or re-download the source code as a zip file
+- Run these following commands in a console: <br/>
+```
+cd adhell3
+gradlew clean assembleDebug
+```
+- The generated apk is located in `app\build\outputs\apk\debug`
 
 ## FAQ
 ### How Adhell works?
