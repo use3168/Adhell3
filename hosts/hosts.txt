@@ -22,7 +22,6 @@
 *.am15.net
 *.amazon-adsystem.com
 *.atdmt.com
-*.baidu.com
 *.bbelements.com
 *.bravenet.com
 *.casalemedia.com
@@ -398,6 +397,7 @@ a.appbluebar.info
 a.applvn.com
 a.aproductmsg.com
 a.backclick.net
+a.baidu.com
 a.boom.ro
 a.c0594.com
 a.cctv.com
@@ -839,6 +839,7 @@ adlooxtracking.com
 adlure.net
 adm.265g.com
 ad-m.asia
+adm.baidu.com
 adm.funshion.com
 adm.fwmrm.net
 adm.shacknews.com
@@ -1713,6 +1714,7 @@ api.revcontent.com
 api.rtvrapi.com
 api.sagent.io
 api.segment.io
+api.share.baidu.com
 api.shoppingminds.net
 api.tumra.com
 api.userback.io
@@ -1821,6 +1823,7 @@ appsha1.cointraffic.io
 apps-hd.com
 appsrv1.madserving.cn
 apr.lijit.com
+aps.hearstnp.com
 aptitude.newversionupdatefreshand4you.space
 apture.com
 apusx.com
@@ -2089,6 +2092,7 @@ baiduccdn.org
 baiduccdn1.com
 baiducdn.org
 baiduqq.com.ov33.com
+baidutv.baidu.com
 balab.portx.net
 balabass.peerserver.com
 balance01.hiiir.com
@@ -2104,6 +2108,7 @@ bang-hotties.com
 banik.redigy.cz
 bankingservices.xyz
 bankofamerica.com.ok.am
+banlv.baidu.com
 banman.nepsecure.co.uk
 banner.*
 banner1.pornhost.com
@@ -2156,6 +2161,7 @@ bans.adserver.co.il
 bans.bride.ru
 banstex.com
 bansys.onzin.com
+bar.baidu.com
 bar.ry2002.02-ry014.snpr.hotmx.hair.zaam.net
 bargainbeautybuys.com
 barnesandnoble.bfast.com
@@ -2183,6 +2189,7 @@ bcggo.ru
 bci-ads.blockchain.info
 bcp.crwdcntrl.net
 bdatero.info
+bdimg.share.baidu.com
 bdnad1.bangornews.com
 bdv.bidvertiser.com
 be.ads.justpremium.com
@@ -2489,6 +2496,7 @@ bt.phorm.com
 btcpop.co
 btg.mtvnservices.com
 btguard.com
+btlsurvey.com
 btricl2.ru
 bttrack.com
 buckilyg.info
@@ -2618,6 +2626,7 @@ c.anytrx.com
 c.aol.com
 c.ar.msn.com
 c.at.msn.com
+c.baidu.com
 c.be.msn.com
 c.bebi.com
 c.betrad.com
@@ -2851,6 +2860,7 @@ catchvid.info
 catrg.peer39.net
 cb.alimama.cn
 cb.amazingcounters.com
+cb.baidu.com
 cb.uuzu.com
 cb1.counterbot.com
 cbads.com
@@ -2859,6 +2869,7 @@ cbanners.virtuagirlhd.com
 cbanners.virtuaguyhd.com
 cbi.boldchat.com
 c-bizsoftportal.com
+cbjs.baidu.com
 cbmall.com
 cbmetrics.clickbank.com
 cbox.ws
@@ -3288,6 +3299,7 @@ cityads.telus.net
 citycash2.blogspot.com
 cj.com
 cjbmanagement.com
+cjhq.baidu.com
 cjlog.com
 cjt1.net
 ck.cpcv.cc
@@ -3468,6 +3480,7 @@ cm.interworksmedia.co.kr
 cm.npc-hearst.overture.com
 cm.npc-medianews.overture.com
 cm.npc-nydn.overture.com
+cm.pos.baidu.com
 cm.qtmojo.com
 cm.the-n.overture.com
 cm1359.com
@@ -3753,6 +3766,7 @@ cpmrange.com
 cpmstar.com
 cpmterra.com
 cpmtree.com
+cpro.baidu.com
 cpro.baidustatic.com
 cps.huowan.com
 cpu.firingsquad.com
@@ -4109,7 +4123,6 @@ dev.adforum.com
 dev.sfbg.com
 dev.visualwebsiteoptimizer.com
 dev.wikia.com
-developer.spotify.com
 devis-abri-de-piscine.fr
 dewsburg.info
 dex.advg.jp
@@ -4294,6 +4307,7 @@ drc-group.net
 drdoms.com
 drewbarrymore.ca.tt
 driverutilities.com
+drmcmm.baidu.com
 drowle.com
 drstation.com
 drumcash.com
@@ -4342,7 +4356,9 @@ dyntrk.com
 dynu.com
 dz.glanceguide.com
 dzcx04lyk9hjp.cloudfront.net
+dzl.baidu.com
 e.70e.com
+e.baidu.com
 e.crashlytics.com
 e.deployads.com
 e.gdbly.com
@@ -4404,6 +4420,7 @@ ecard4all.com
 ecestats.theglobeandmail.com
 echo.intergient.com
 ecircle-ag.com
+eclick.baidu.com
 eclick.vn
 eclkmpbn.com
 eclkmpsa.com
@@ -4445,6 +4462,7 @@ egypolice.net
 ehg.fedex.com
 ei.imbucurator-de-prost.com
 eitbglobal.ojdinteractiva.com
+eiv.baidu.com
 ejaculationbycommand.com
 e-kasa.w8w.pl
 ektezis.ru
@@ -4471,7 +4489,6 @@ emarketmakers.com
 embed.5min.com
 embed.insticator.com
 embed.newsinc.com
-embed.spotify.com
 embed.wistia.com
 emdianetwork.net
 emea.rel.msn.com
@@ -5257,6 +5274,7 @@ gift-today85.online
 gigabytedownloads.com
 gigaonclick.com
 gigya.com
+gimg.baidu.com
 gimmethatreward.com
 gingert.net
 gintracking.com
@@ -5410,6 +5428,7 @@ gsm-mobile-phone.beesearch.info
 gtcc1.acecounter.com
 gto-media.com
 gtop100.com
+guanjia.baidu.com
 guardedgovernor.com
 guerria-skateboard-tommy.tabrays.com
 guesstheview.com
@@ -5492,6 +5511,7 @@ hb.springserve.com
 hb.vntsm.com
 hbads.eboz.com
 hbadz.eboz.com
+hc.baidu.com
 hc2.humanclick.com
 hcg82f2b.com
 hcgdropsboutique.com
@@ -5610,6 +5630,7 @@ hl.megashares.com
 hlcc.ca
 hlg.tokbox.com
 hlu9tseh.men
+hm.baidu.com
 hm.l.qq.com
 hn.inspectlet.com
 hnfwg.voluumtrk.com
@@ -5813,6 +5834,7 @@ idpix.media6degrees.com
 idsync.rlcdn.com
 idtargeting.com
 ieaddons.com
+iebar.baidu.com
 ieeawxjool.com
 ientrymail.com
 ieplugin.com
@@ -5842,6 +5864,7 @@ ii-sex.com
 iitaopy.com
 ijacko.net
 ijbybfznp.com
+ikcode.baidu.com
 ikhouzotjesveelvanjou.com
 ikvuvztmvvro.bid
 ilbanner.com
@@ -6902,6 +6925,7 @@ m4lzz.superpromo.0707.pics
 m4n.nl
 m4ymh0220.tech
 m57ku6sm.com
+ma.baidu.com
 ma61-c.analytics.edgesuite.net
 mabosbet.com
 mac.com-w.net
@@ -7733,6 +7757,7 @@ nedstatbasic.net
 nedstatpro.net
 needadvertising.com
 nefroto.net
+neirong.baidu.com
 nekopod.info
 nellyticket.beast-space.com
 nelsongod.ca
@@ -7883,6 +7908,7 @@ now.eloqua.com
 nowcheck.seethisamazinguogradeswinmacawesome.win
 nowdownloadall.com
 nowfreedownloads.com
+nowgetsoft.pushingnewforcontentsafeload.download
 nowinstallupgrade.clickforultimateandbest2updatingpc.top
 nowinstallupgrade.goodcentralupdatesall.bid
 nowruzbakher.com
@@ -7918,6 +7944,7 @@ ns3.openinternetexchange.com
 nsads.hotwired.com
 nsads.us.publicus.com
 nsads4.us.publicus.com
+nsclick.baidu.com
 nspmotion.com
 nst.broadcast.pm
 nstat.tudou.com
@@ -8140,7 +8167,6 @@ opcwdns.opcw.nl
 open.4info.net
 open.ad.yieldmanager.net
 open.oneplus.net
-open.spotify.com
 openad.infobel.com
 openad.tf1.fr
 openad.travelnow.com
@@ -8607,8 +8633,6 @@ plaxo.com
 play.cpm360.com
 play.leadzupc.com
 play.realfreegames.net
-play.spotify.com
-play.spotify.edgekey.net
 play.traffpartners.com
 play4traffic.com
 play-asia.com
@@ -8715,6 +8739,7 @@ porntrack.com
 porntraff.com
 porntubemate.com
 portaldimensional.com
+pos.baidu.com
 posed2shade.com
 possibleboats.com
 post.netchina.com.cn
@@ -9448,6 +9473,7 @@ s.aolcdn.com
 s.arclk.net
 s.atemda.com
 s.ato.mx
+s.baidu.com
 s.boom.ro
 s.click.aliexpress.com
 s.clickability.com
@@ -9855,6 +9881,7 @@ settingsbucket.s3.amazonaws.com
 settings-win.data.microsoft.com
 setupdate24.updateworkfreshandnew.space
 setupdate24.updateworkfreshandnew.website
+setupnow.amazinglysafeistallsforeveryonethisweek.review
 setupupgrade12.thepointofforcontentingperfect.win
 sexadvertentiesite.nl
 sexblogsdir.com
@@ -10029,6 +10056,7 @@ smartstats.com
 smarttargetting.com
 smcheck.org
 smetrics.att.com
+smetrics.ctv.ca
 smetrics.shinseibank.com
 smetrics.skype.com
 smetrics.walgreens.com
@@ -10058,6 +10086,8 @@ snip.answers.com
 snipjs.answcdn.com
 snoobi.com
 sns.qzone.qq.com
+sobar.baidu.com
+sobartop.baidu.com
 sobolev.net.ru
 sochr.com
 social.bidsystem.com
@@ -10131,6 +10161,7 @@ sparc.nour.net.sa
 sparkstudios.com
 spc.cekfmeoejdbfcfichgbfcgjf.vast2as3.glammedia-pubnet.northamerica.telemetryverification.net
 spcnv.i-mobile.co.jp
+spcode.baidu.com
 spdeliver.i-mobile.co.jp
 spdmg.i-mobile.co.jp
 spdmg-backend2.i-mobile.co.jp
@@ -10194,7 +10225,6 @@ sportzone.do.am
 spot.fitness.com
 spot.im
 spot-01.atas.io
-spotify.com
 spotlights.wikia.net
 spotxchange.com
 spotxchange-a.akamaihd.net
@@ -10855,6 +10885,7 @@ teads.tv
 tealeaf.com
 tealium.hs.llnwd.net
 team4heat.net
+teamdzsn.beget.tech
 teatac4bath.com
 tech.affiliation-int.com
 tech.weeklytribune.net
@@ -11003,7 +11034,9 @@ tiwiza.ru
 tizers.net
 tizru.com
 tjs.sjs.sinajs.cn
+tk.baidu.com
 tk.qjpz66.com
+tkweb.baidu.com
 tlvmedia.com
 tlx.3lift.com
 tm.adk2x.com
@@ -11029,10 +11062,12 @@ tomksoft.popunder.ru
 tommysbookmarks.com
 tommysbookmarks.net
 tomorrownewstoday.com
+tongji.baidu.com
 tongji.linezing.com
 tons-to-see.com
 toofanshadid.com
 toolbar.adperium.com
+toolbar.baidu.com
 toolbar.soso.com
 toolbar2.wibiya.com
 toolbarbest.biz
@@ -11409,6 +11444,7 @@ ubh-d.openx.net
 ubmcmm.baidustatic.com
 uc.csc.adserver.yahoo.com
 uconnect.tealiumiq.com
+ucstat.baidu.com
 ucstc5.yjyc-ask.com
 udarem.com
 udatabiz.com
@@ -11442,6 +11478,7 @@ ukbanners.com
 ukrpts.net
 uktc.ijento.com
 uleadstrk.com
+ulic.baidu.com
 ulnpoxaxici.bid
 ultimateclixx.com
 ultimatecounter.com
@@ -11467,6 +11504,7 @@ unijfkajh554.co.cc
 union.55haitao.com
 union.56.com
 union.6.cn
+union.baidu.com
 uniqebrokeroffers.com
 uniqlo.edgesuite.net
 uniqueinternettexasholdempoker.com
@@ -11480,6 +11518,7 @@ unlimdownload.com
 unlockr.com
 unrulymedia.com
 unrulyx-sg-8.unrulymedia.com
+unstat.baidu.com
 untd.com
 unusualtitle.com
 unwashedsound.com
@@ -11590,9 +11629,11 @@ utarget.co.uk
 utarget.ru
 utclient.utorrent.com
 utenti.lycos.it
+utility.baidu.com
 utils.mediageneral.com
 utils.media-general.com
 utils.mediageneral.net
+utk.baidu.com
 utraffic.engine.adglare.net
 uv9ieb2ohr.com
 uvimage.56.com
@@ -11867,6 +11908,7 @@ walternsa.com
 walternse.com
 wan.yeyou.com
 wangluoruanjian.com
+wangmeng.baidu.com
 wantmobi.bid
 wantsfly.com
 wap.casee.cn
@@ -12074,6 +12116,7 @@ wl1xbet.adsrv.eacdn.com
 wlmarketing.com
 wlp.mycomputermechanics.com
 wlpinnacle.adsrv.eacdn.com
+wm.baidu.com
 wm.maxysearch.info
 wmedia.adk2x.com
 wmedia.rotator.hadj7.adjuggler.net
@@ -12491,3 +12534,4 @@ zy4-444.s3.amazonaws.com
 zyn.ga
 zytpirwai.net
 zzz.bjhxjh.com
+zzzrtrcm2.com
