@@ -6,14 +6,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 
 import com.fusionjack.adhell3.R;
@@ -36,26 +36,31 @@ public class ShowBlockUrlFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_show_blocked_urls, container, false);
-        EditText editText = view.findViewById(R.id.blockedUrlFilter);
-        editText.setOnClickListener(v -> editText.setCursorVisible(true));
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                new FilterUrlAsyncTask(getContext(), appDatabase).execute();
-            }
-        });
+        setHasOptionsMenu(true);
 
         new LoadBlockedUrlAsyncTask(getContext(), getArguments(), appDatabase).execute();
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String text) {
+                new FilterUrlAsyncTask(text, getContext(), appDatabase).execute();
+                return false;
+            }
+        });
     }
 
     private static class LoadBlockedUrlAsyncTask extends AsyncTask<Void, Void, List<String>> {
@@ -95,24 +100,20 @@ public class ShowBlockUrlFragment extends Fragment {
     private static class FilterUrlAsyncTask extends AsyncTask<Void, Void, List<String>> {
         private WeakReference<Context> contextReference;
         private AppDatabase appDatabase;
+        private String text;
 
-        FilterUrlAsyncTask(Context context, AppDatabase appDatabase) {
+        FilterUrlAsyncTask(String text, Context context, AppDatabase appDatabase) {
+            this.text = text;
             this.contextReference = new WeakReference<>(context);
             this.appDatabase = appDatabase;
         }
 
         @Override
         protected List<String> doInBackground(Void... o) {
-            Context context = contextReference.get();
-            if (context != null) {
-                EditText editText = ((Activity) context).findViewById(R.id.blockedUrlFilter);
-                final String text = editText.getText().toString();
-                final String filterText = '%' + text + '%';
-                return text.isEmpty() ?
-                        BlockUrlUtils.getAllBlockedUrls(appDatabase) :
-                        BlockUrlUtils.getBlockedUrls(filterText, appDatabase);
-            }
-            return null;
+            final String filterText = '%' + text + '%';
+            return text.isEmpty() ?
+                    BlockUrlUtils.getAllBlockedUrls(appDatabase) :
+                    BlockUrlUtils.getBlockedUrls(filterText, appDatabase);
         }
 
         @Override
