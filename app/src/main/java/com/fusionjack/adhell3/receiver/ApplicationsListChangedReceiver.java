@@ -3,6 +3,7 @@ package com.fusionjack.adhell3.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.fusionjack.adhell3.App;
@@ -18,14 +19,28 @@ public class ApplicationsListChangedReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         AsyncTask.execute(() ->
         {
-            String packageName = intent.getData().getEncodedSchemeSpecificPart();
-            AppDatabase mDb = AppDatabase.getAppDatabase(App.get().getApplicationContext());
-            List<AppInfo> packageList = mDb.applicationInfoDao().getAll();
-            if (packageList.size() == 0) return;
-            if (intent.getAction().equalsIgnoreCase("android.intent.action.PACKAGE_ADDED"))
-                mDb.applicationInfoDao().insert(AppsListDBInitializer.getInstance()
-                        .generateAppInfo(context.getPackageManager(), packageName));
-            else mDb.applicationInfoDao().deleteAppInfoByPackageName(packageName);
+            AppDatabase appDatabase = AppDatabase.getAppDatabase(App.get().getApplicationContext());
+            List<AppInfo> packageList = appDatabase.applicationInfoDao().getAll();
+            if (packageList.size() == 0) {
+                return;
+            }
+
+            Uri data = intent.getData();
+            String packageName = "";
+            if (data != null) {
+                packageName = data.getEncodedSchemeSpecificPart();
+            }
+
+            String action = intent.getAction();
+            if (action != null && !packageName.isEmpty()) {
+                if (action.equalsIgnoreCase("android.intent.action.PACKAGE_ADDED")) {
+                    appDatabase.applicationInfoDao().deleteAppInfoByPackageName(packageName);
+                    appDatabase.applicationInfoDao().insert(AppsListDBInitializer.getInstance()
+                            .generateAppInfo(context.getPackageManager(), packageName));
+                } else if (action.equalsIgnoreCase("android.intent.action.PACKAGE_REMOVED")) {
+                    appDatabase.applicationInfoDao().deleteAppInfoByPackageName(packageName);
+                }
+            }
         });
     }
 }
