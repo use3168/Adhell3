@@ -27,6 +27,7 @@
 
     <CheckBox
         android:id="@+id/urlProviderCheckBox"
+        android:button="@drawable/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_alignTop="@+id/blockUrlProviderTextView"
