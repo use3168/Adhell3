@@ -1,7 +1,6 @@
 package com.fusionjack.adhell3.fragments;
 
 import android.app.admin.DevicePolicyManager;
-import android.arch.lifecycle.LifecycleFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -29,7 +29,7 @@ import com.fusionjack.adhell3.dialogfragment.DnsChangeDialogFragment;
 import com.fusionjack.adhell3.receiver.CustomDeviceAdminReceiver;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 
-public class AppSettingsFragment extends LifecycleFragment {
+public class AppSettingsFragment extends Fragment {
     private static final String TAG = AppSettingsFragment.class.getCanonicalName();
     private FragmentManager fragmentManager;
     private ContentBlocker contentBlocker;

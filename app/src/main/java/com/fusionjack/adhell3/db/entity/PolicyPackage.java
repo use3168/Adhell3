@@ -11,15 +11,18 @@ import com.fusionjack.adhell3.db.DateConverter;
 import java.util.Date;
 import java.util.List;
 
+import android.support.annotation.NonNull;
+
 @Entity(
         tableName = "PolicyPackage"
 )
 @TypeConverters(DateConverter.class)
 public class PolicyPackage {
 
+    @NonNull
     @PrimaryKey
     @ColumnInfo(name = "id")
-    public String id;
+    public String id = "";
 
     @ColumnInfo(name = "name")
     public String name;

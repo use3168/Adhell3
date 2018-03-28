@@ -1,11 +1,11 @@
 package com.fusionjack.adhell3.fragments;
 
 import android.app.Activity;
-import android.arch.lifecycle.LifecycleFragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -30,7 +30,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class AdhellReportsFragment extends LifecycleFragment {
+public class AdhellReportsFragment extends Fragment {
     private AppCompatActivity parentActivity;
     private AppDatabase appDatabase;
 

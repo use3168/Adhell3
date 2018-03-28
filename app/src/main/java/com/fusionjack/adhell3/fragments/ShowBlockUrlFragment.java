@@ -1,11 +1,11 @@
 package com.fusionjack.adhell3.fragments;
 
 import android.app.Activity;
-import android.arch.lifecycle.LifecycleFragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -23,7 +23,7 @@ import com.fusionjack.adhell3.utils.BlockUrlUtils;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class ShowBlockUrlFragment extends LifecycleFragment {
+public class ShowBlockUrlFragment extends Fragment {
     private AppDatabase appDatabase;
 
     @Override

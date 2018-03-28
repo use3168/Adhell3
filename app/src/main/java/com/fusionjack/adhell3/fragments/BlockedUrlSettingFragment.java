@@ -1,8 +1,8 @@
 package com.fusionjack.adhell3.fragments;
 
-import android.arch.lifecycle.LifecycleFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -16,7 +16,7 @@ import com.fusionjack.adhell3.blocker.ContentBlocker;
 import com.fusionjack.adhell3.blocker.ContentBlocker57;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 
-public class BlockedUrlSettingFragment extends LifecycleFragment {
+public class BlockedUrlSettingFragment extends Fragment {
     private static final String TAG = BlockedUrlSettingFragment.class.getCanonicalName();
     private ContentBlocker contentBlocker;
     private FragmentManager fragmentManager;

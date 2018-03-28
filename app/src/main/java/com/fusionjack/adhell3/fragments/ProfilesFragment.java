@@ -1,8 +1,8 @@
 package com.fusionjack.adhell3.fragments;
 
-import android.arch.lifecycle.LifecycleFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.fusionjack.adhell3.R;
 
-public class ProfilesFragment extends LifecycleFragment {
+public class ProfilesFragment extends Fragment {
     private FragmentManager fragmentManager;
     private AppCompatActivity parentActivity;
     private RecyclerView recyclerView;

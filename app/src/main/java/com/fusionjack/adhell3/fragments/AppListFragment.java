@@ -1,8 +1,8 @@
 package com.fusionjack.adhell3.fragments;
 
-import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,7 +18,7 @@ import com.fusionjack.adhell3.db.entity.AppInfo;
 import com.fusionjack.adhell3.viewmodel.AdhellWhitelistAppsViewModel;
 
 
-public class AppListFragment extends LifecycleFragment {
+public class AppListFragment extends Fragment {
     private static final String TAG = AppListFragment.class.getCanonicalName();
     private ListView appListView;
     private AppWhitelistAdapter appWhitelistAdapter;

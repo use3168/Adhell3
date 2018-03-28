@@ -1,9 +1,9 @@
 package com.fusionjack.adhell3.fragments;
 
-import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -32,7 +32,7 @@ import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class CustomBlockUrlProviderFragment extends LifecycleFragment {
+public class CustomBlockUrlProviderFragment extends Fragment {
 
     private static final String TAG = CustomBlockUrlProviderFragment.class.getCanonicalName();
     private AppDatabase mDb;

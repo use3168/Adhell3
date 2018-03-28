@@ -2,13 +2,13 @@ package com.fusionjack.adhell3.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.enterprise.ApplicationPolicy;
-import android.arch.lifecycle.LifecycleFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,7 +38,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class PackageDisablerFragment extends LifecycleFragment {
+public class PackageDisablerFragment extends Fragment {
     private static final String TAG = PackageDisablerFragment.class.getCanonicalName();
     private final int SORTED_ALPHABETICALLY = 0;
     private final int SORTED_INSTALL_TIME = 1;

@@ -1,8 +1,8 @@
 package com.fusionjack.adhell3.fragments;
 
-import android.arch.lifecycle.LifecycleFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.fusionjack.adhell3.R;
 
-public class BlogFragment extends LifecycleFragment {
+public class BlogFragment extends Fragment {
     private TextView entryTextView;
     AppCompatActivity parentActivity;
     @Nullable
