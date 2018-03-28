@@ -2,12 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_pack_dis_reload"
-        android:icon="@drawable/reload"
-        android:orderInCategory="100"
-        android:title="Reload"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/action_pack_dis_sort"
         android:icon="@drawable/sort"
         android:orderInCategory="100"
@@ -26,6 +20,12 @@
         android:title="Overflow"
         app:showAsAction="always">
         <menu>
+            <item
+                android:id="@+id/disabler_import_storage"
+                android:title="@string/disabler_import_storage" />
+            <item
+                android:id="@+id/disabler_export_storage"
+                android:title="@string/disabler_export_storage" />
             <item
                 android:id="@+id/disabler_enable_all"
                 android:title="@string/disabler_enable_all" />
