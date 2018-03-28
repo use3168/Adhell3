@@ -69,6 +69,9 @@ public abstract class AppDatabase extends RoomDatabase {
             File sd = Environment.getExternalStorageDirectory();
             if (sd.canWrite()) {
                 File adhell3 = new File(sd, "adhell3");
+                if (!adhell3.exists()) {
+                    adhell3.mkdir();
+                }
                 File db = new File(adhell3, "adhell-database");
                 location = db.getAbsolutePath();
             } else {
