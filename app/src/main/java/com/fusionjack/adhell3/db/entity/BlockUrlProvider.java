@@ -12,7 +12,7 @@ import com.fusionjack.adhell3.db.DateConverter;
 import java.util.Date;
 
 @Entity(tableName = "BlockUrlProviders",
-        indices = {@Index(value = {"url"}, unique = true)},
+        indices = {@Index("policyPackageId")},
         foreignKeys = @ForeignKey(entity = PolicyPackage.class,
                 parentColumns = "id",
                 childColumns = "policyPackageId"))

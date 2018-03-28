@@ -9,7 +9,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(
         tableName = "FirewallWhitelistedPackage",
-        indices = {@Index(value = {"packageName", "policyPackageId"}, unique = true)},
+        indices = {@Index("policyPackageId")},
         foreignKeys = @ForeignKey(entity = PolicyPackage.class,
                 parentColumns = "id",
                 childColumns = "policyPackageId")

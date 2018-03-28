@@ -9,13 +9,13 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(
         tableName = "BlockUrl",
+        indices = {@Index("urlProviderId")},
         foreignKeys = @ForeignKey(
                 entity = BlockUrlProvider.class,
                 parentColumns = "_id",
                 childColumns = "urlProviderId",
                 onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index(value = {"url", "urlProviderId"}, unique = true)}
+        )
 )
 public class BlockUrl {
     @PrimaryKey(autoGenerate = true)

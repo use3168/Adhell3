@@ -8,7 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(
         tableName = "DisabledPackage",
-        indices = {@Index(value = {"packageName", "policyPackageId"}, unique = true)},
+        indices = {@Index("policyPackageId")},
         foreignKeys = @ForeignKey(entity = PolicyPackage.class,
                 parentColumns = "id",
                 childColumns = "policyPackageId")

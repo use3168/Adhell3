@@ -13,11 +13,7 @@ import com.fusionjack.adhell3.db.DateConverter;
 import java.util.Date;
 
 @Entity(
-        tableName = "UserBlockUrl",
-        indices = {@Index(value = {"url"}, unique = true)},
-        foreignKeys = @ForeignKey(entity = PolicyPackage.class,
-                parentColumns = "id",
-                childColumns = "policyPackageId")
+        tableName = "UserBlockUrl"
 )
 @TypeConverters(DateConverter.class)
 public class UserBlockUrl {
@@ -29,9 +25,6 @@ public class UserBlockUrl {
     public String url;
 
     public Date insertedAt;
-
-    @ColumnInfo(name = "policyPackageId")
-    public String policyPackageId;
 
     public UserBlockUrl() {
     }
