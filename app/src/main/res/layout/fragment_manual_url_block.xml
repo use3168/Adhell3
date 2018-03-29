@@ -16,15 +16,17 @@
 
     <EditText
         android:id="@+id/addBlockedUrlEditText"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/noteTextView"
+        android:layout_toLeftOf="@+id/addCustomBlockedUrlButton"
+        android:layout_toStartOf="@+id/addCustomBlockedUrlButton"
         android:layout_margin="5dp"
-        android:inputType="textUri"
-        app:layout_widthPercent="70%"/>
+        android:inputType="textUri"/>
 
     <Button
         android:id="@+id/addCustomBlockedUrlButton"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_alignParentEnd="true"

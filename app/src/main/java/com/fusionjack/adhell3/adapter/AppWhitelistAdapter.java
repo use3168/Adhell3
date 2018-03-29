@@ -56,16 +56,24 @@ public class AppWhitelistAdapter extends ArrayAdapter<AppInfo> {
         }
         AppInfo appInfo = getItem(position);
         if (appInfo != null) {
-            ImageView appIconImageView = convertView.findViewById(R.id.appIconImageView);
-            TextView appNameTextView = convertView.findViewById(R.id.appNameTextView);
-            Switch adhellWhitelistAppSwitch = convertView.findViewById(R.id.adhellWhitelistAppSwitch);
-            appNameTextView.setText(appInfo.appName);
+            ImageView appIcon = convertView.findViewById(R.id.appIcon);
+            TextView appName = convertView.findViewById(R.id.appName);
+            TextView packageName = convertView.findViewById(R.id.packName);
+            TextView systemOrNot = convertView.findViewById(R.id.systemOrNot);
+            Switch adhellWhitelistApp = convertView.findViewById(R.id.adhellWhitelistApp);
+            appName.setText(appInfo.appName);
+            packageName.setText(appInfo.packageName);
+            if (appInfo.system) {
+                systemOrNot.setVisibility(View.VISIBLE);
+            } else {
+                systemOrNot.setVisibility(View.GONE);
+            }
             try {
-                appIconImageView.setImageDrawable(mPackageManager.getApplicationIcon(appInfo.packageName));
+                appIcon.setImageDrawable(mPackageManager.getApplicationIcon(appInfo.packageName));
             } catch (PackageManager.NameNotFoundException e) {
                 Log.e(TAG, "Failed to get application icon", e);
             }
-            adhellWhitelistAppSwitch.setChecked(!appInfo.adhellWhitelisted);
+            adhellWhitelistApp.setChecked(!appInfo.adhellWhitelisted);
         }
         return convertView;
     }

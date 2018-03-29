@@ -1,52 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.percent.PercentRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <Button
         android:id="@+id/editUrls"
-        android:layout_width="300dp"
+        app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
         android:text="@string/edit_block_list"/>
 
     <Button
         android:id="@+id/allowApps"
-        android:layout_width="300dp"
+        app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/editUrls"
+        android:layout_centerHorizontal="true"
         android:text="@string/allow_apps"/>
 
     <Button
         android:id="@+id/changeDnsButton"
-        android:layout_width="300dp"
+        app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/allowApps"
+        android:layout_centerHorizontal="true"
         android:text="@string/change_dns_button"/>
 
     <Button
         android:id="@+id/deleteApp"
-        android:layout_width="300dp"
+        app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/changeDnsButton"
+        android:layout_centerHorizontal="true"
         android:text="@string/delete_app"/>
 
     <EditText
         android:id="@+id/knox_key_editText"
-        android:layout_width="300dp"
+        app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/deleteApp"
         android:ems="10"
         android:hint="Knox Key"
-        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
         android:inputType="textPassword" />
 
     <Button
         android:id="@+id/submit_knox_key_button"
-        android:layout_width="300dp"
+        app:layout_widthPercent="70%"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/knox_key_editText"
+        android:layout_centerHorizontal="true"
         android:text="Submit Knox Key" />
 
-</LinearLayout>
+</android.support.percent.PercentRelativeLayout>

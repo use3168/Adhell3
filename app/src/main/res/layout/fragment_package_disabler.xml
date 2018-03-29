@@ -9,6 +9,7 @@
         android:id="@+id/disabledFilter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:imeOptions="actionSearch"
         android:inputType="textNoSuggestions|textVisiblePassword"
         android:lines="1"
@@ -17,6 +18,7 @@
     <ListView
         android:id="@+id/installed_apps_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"/>
 
 </LinearLayout>

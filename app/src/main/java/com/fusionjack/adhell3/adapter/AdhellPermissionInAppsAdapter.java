@@ -79,6 +79,11 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
         AppInfo appInfo = appInfos.get(position);
         holder.appNameTextView.setText(appInfo.appName);
         holder.appPackageNameTextView.setText(appInfo.packageName);
+        if (appInfo.system) {
+            holder.systemOrNotTextView.setVisibility(View.VISIBLE);
+        } else {
+            holder.systemOrNotTextView.setVisibility(View.GONE);
+        }
         Drawable icon = null;
         try {
             icon = mPackageManager.getApplicationIcon(appInfo.packageName);
@@ -109,14 +114,16 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
         ImageView appIconImageView;
         TextView appNameTextView;
         TextView appPackageNameTextView;
+        TextView systemOrNotTextView;
         Switch appPermissionSwitch;
 
         ViewHolder(View itemView) {
             super(itemView);
-            appIconImageView = (ImageView) itemView.findViewById(R.id.appIconImageView);
-            appNameTextView = (TextView) itemView.findViewById(R.id.appNameTextView);
-            appPackageNameTextView = (TextView) itemView.findViewById(R.id.appPackageNameTextView);
-            appPermissionSwitch = (Switch) itemView.findViewById(R.id.appPermissionSwitch);
+            appIconImageView = (ImageView) itemView.findViewById(R.id.appIcon);
+            appNameTextView = (TextView) itemView.findViewById(R.id.appName);
+            appPackageNameTextView = (TextView) itemView.findViewById(R.id.packName);
+            systemOrNotTextView = (TextView) itemView.findViewById(R.id.systemOrNot);
+            appPermissionSwitch = (Switch) itemView.findViewById(R.id.appPermission);
             itemView.setOnClickListener(this);
         }
 
