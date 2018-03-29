@@ -27,8 +27,8 @@ import javax.inject.Inject;
 public class AdhellAppIntegrity {
     public static final String ADHELL_STANDARD_PACKAGE = "https://goo.gl/soJyHa";
     public static final int BLOCK_URL_LIMIT = 15000;
+    public final static String DEFAULT_POLICY_ID = "default-policy";
 
-    private final static String DEFAULT_POLICY_ID = "default-policy";
     private static final String TAG = AdhellAppIntegrity.class.getCanonicalName();
     private static final String DEFAULT_POLICY_CHECKED = "adhell_default_policy_created";
     private static final String DISABLED_PACKAGES_MOVED = "adhell_disabled_packages_moved";
