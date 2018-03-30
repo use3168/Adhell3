@@ -98,7 +98,7 @@ public class AppSettingsFragment extends Fragment {
                 .setNegativeButton(android.R.string.no, null).show());
 
         Button changeDnsButton = (Button) view.findViewById(R.id.changeDnsButton);
-        if (contentBlocker instanceof ContentBlocker57) {
+        if (contentBlocker instanceof ContentBlocker56 || contentBlocker instanceof ContentBlocker57) {
             changeDnsButton.setOnClickListener(v ->
             {
                 Log.d(TAG, "Show dns change dialog");

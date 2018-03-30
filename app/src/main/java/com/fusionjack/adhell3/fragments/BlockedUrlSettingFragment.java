@@ -13,6 +13,7 @@ import android.widget.Button;
 
 import com.fusionjack.adhell3.R;
 import com.fusionjack.adhell3.blocker.ContentBlocker;
+import com.fusionjack.adhell3.blocker.ContentBlocker56;
 import com.fusionjack.adhell3.blocker.ContentBlocker57;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 
@@ -50,7 +51,7 @@ public class BlockedUrlSettingFragment extends Fragment {
         });
 
         Button showCustomUrlProvidersFragmentButton = (Button) view.findViewById(R.id.showCustomUrlProvidersFragmentButton);
-        if (contentBlocker instanceof ContentBlocker57) {
+        if (contentBlocker instanceof ContentBlocker56 || contentBlocker instanceof ContentBlocker57) {
             showCustomUrlProvidersFragmentButton.setOnClickListener(v -> {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentContainer, new CustomBlockUrlProviderFragment());
