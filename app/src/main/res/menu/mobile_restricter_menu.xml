@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/search"
+        android:title="Search"
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
     <item
         android:id="@+id/action_pack_dis_sort"
         android:icon="@drawable/ic_sort_white_24dp"
-        android:orderInCategory="100"
         android:title="Sort"
         app:showAsAction="always">
         <menu>
@@ -16,7 +19,6 @@
     <item
         android:id="@+id/action_overflow"
         android:icon="@drawable/overflow"
-        android:orderInCategory="100"
         android:title="Overflow"
         app:showAsAction="always">
         <menu>

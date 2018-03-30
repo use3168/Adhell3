@@ -2,7 +2,6 @@ package com.fusionjack.adhell3.adapter;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,16 +16,18 @@ import com.fusionjack.adhell3.db.entity.AppInfo;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class AppDisablerAdapter extends BaseAdapter {
+public class AppInfoAdapter extends BaseAdapter {
 
     private List<AppInfo> applicationInfoList;
     private WeakReference<Context> contextReference;
     private PackageManager packageManager;
+    private boolean disabler;
 
-    public AppDisablerAdapter(List<AppInfo> appInfoList, Context context, PackageManager packageManager) {
+    public AppInfoAdapter(List<AppInfo> appInfoList, boolean disabler, Context context, PackageManager packageManager) {
         this.applicationInfoList = appInfoList;
         this.contextReference = new WeakReference<>(context);
         this.packageManager = packageManager;
+        this.disabler = disabler;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class AppDisablerAdapter extends BaseAdapter {
         AppInfo appInfo = applicationInfoList.get(position);
         holder.nameH.setText(appInfo.appName);
         holder.packageH.setText(appInfo.packageName);
-        holder.switchH.setChecked(!appInfo.disabled);
+        holder.switchH.setChecked(disabler ? !appInfo.disabled : !appInfo.mobileRestricted);
         if (appInfo.system) {
             convertView.findViewById(R.id.systemOrNot).setVisibility(View.VISIBLE);
         } else {

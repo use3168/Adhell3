@@ -1,6 +1,5 @@
 package com.fusionjack.adhell3.fragments;
 
-import android.app.Activity;
 import android.app.enterprise.ApplicationPolicy;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -26,12 +25,11 @@ import android.widget.Toast;
 
 import com.fusionjack.adhell3.App;
 import com.fusionjack.adhell3.R;
-import com.fusionjack.adhell3.adapter.AppDisablerAdapter;
+import com.fusionjack.adhell3.adapter.AppInfoAdapter;
 import com.fusionjack.adhell3.db.AppDatabase;
 import com.fusionjack.adhell3.db.entity.AppInfo;
 import com.fusionjack.adhell3.db.entity.DisabledPackage;
 import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
-import com.fusionjack.adhell3.utils.AppsListDBInitializer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,15 +38,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import static com.fusionjack.adhell3.fragments.LoadAppAsyncTask.SORTED_DISABLED;
+import static com.fusionjack.adhell3.fragments.LoadAppAsyncTask.SORTED_DISABLED_ALPHABETICALLY;
+import static com.fusionjack.adhell3.fragments.LoadAppAsyncTask.SORTED_DISABLED_INSTALL_TIME;
+
 public class PackageDisablerFragment extends Fragment {
-    private final static int SORTED_ALPHABETICALLY = 0;
-    private final static int SORTED_INSTALL_TIME = 1;
-    private final static int SORTED_DISABLED = 2;
 
     @Nullable
     @Inject
@@ -59,7 +57,8 @@ public class PackageDisablerFragment extends Fragment {
     PackageManager packageManager;
 
     private Context context;
-    private int sortState = SORTED_ALPHABETICALLY;
+    private int sortState = SORTED_DISABLED_ALPHABETICALLY;
+    private int layout;
 
     public PackageDisablerFragment() {
     }
@@ -81,20 +80,22 @@ public class PackageDisablerFragment extends Fragment {
         }
         setHasOptionsMenu(true);
 
+        layout = R.id.installed_apps_list;
+
         View view = inflater.inflate(R.layout.fragment_package_disabler, container, false);
         ListView installedAppsView = view.findViewById(R.id.installed_apps_list);
         installedAppsView.setOnItemClickListener((AdapterView<?> adView, View view2, int position, long id) -> {
-            AppDisablerAdapter disablerAppAdapter = (AppDisablerAdapter) adView.getAdapter();
+            AppInfoAdapter disablerAppAdapter = (AppInfoAdapter) adView.getAdapter();
             String packageName = disablerAppAdapter.getItem(position).packageName;
             new SetAppAsyncTask(packageName, view2, appDatabase, appPolicy).execute();
         });
 
         SwipeRefreshLayout swipeContainer = view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(() ->
-                new RefreshAsynckTask(sortState, context, appDatabase, packageManager).execute()
+                new RefreshAppAsyncTask(sortState, layout, true, context, appDatabase, packageManager).execute()
         );
 
-        new LoadAppAsyncTask("", sortState, context, appDatabase, packageManager).execute();
+        new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
         return view;
     }
 
@@ -113,7 +114,7 @@ public class PackageDisablerFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String text) {
-                new LoadAppAsyncTask(text, sortState, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask(text, sortState, layout, true, context, appDatabase, packageManager).execute();
                 return false;
             }
         });
@@ -125,21 +126,22 @@ public class PackageDisablerFragment extends Fragment {
             case R.id.action_pack_dis_sort:
                 break;
             case R.id.sort_alphabetically_item:
-                if (sortState == SORTED_ALPHABETICALLY) break;
-                sortState = SORTED_ALPHABETICALLY;
+                if (sortState == SORTED_DISABLED_ALPHABETICALLY) break;
+                sortState = SORTED_DISABLED_ALPHABETICALLY;
                 Toast.makeText(context, getString(R.string.app_list_sorted_by_alphabet), Toast.LENGTH_SHORT).show();
-                new LoadAppAsyncTask("", sortState, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
                 break;
             case R.id.sort_by_time_item:
-                if (sortState == SORTED_INSTALL_TIME) break;
-                sortState = SORTED_INSTALL_TIME;
+                if (sortState == SORTED_DISABLED_INSTALL_TIME) break;
+                sortState = SORTED_DISABLED_INSTALL_TIME;
                 Toast.makeText(context, getString(R.string.app_list_sorted_by_date), Toast.LENGTH_SHORT).show();
-                new LoadAppAsyncTask("", sortState, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
                 break;
             case R.id.sort_disabled_item:
+                if (sortState == SORTED_DISABLED) break;
                 sortState = SORTED_DISABLED;
                 Toast.makeText(context, getString(R.string.app_list_sorted_by_disabled), Toast.LENGTH_SHORT).show();
-                new LoadAppAsyncTask("", sortState, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
                 break;
             case R.id.disabler_import_storage:
                 Toast.makeText(context, getString(R.string.imported_from_storage), Toast.LENGTH_SHORT).show();
@@ -165,6 +167,7 @@ public class PackageDisablerFragment extends Fragment {
 
             File file = new File(Environment.getExternalStorageDirectory(), "adhell_packages.txt");
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                appDatabase.disabledPackageDao().deleteAll();
                 String line;
                 while ((line = reader.readLine()) != null) {
                     AppInfo appInfo = appDatabase.applicationInfoDao().getByPackageName(line);
@@ -177,7 +180,7 @@ public class PackageDisablerFragment extends Fragment {
                     disabledPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
                     appDatabase.disabledPackageDao().insert(disabledPackage);
                 }
-                new LoadAppAsyncTask("", sortState, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
             }
             catch (IOException e) {
                 Log.e("Exception", "File write failed: " + e.toString());
@@ -214,52 +217,8 @@ public class PackageDisablerFragment extends Fragment {
                 appDatabase.applicationInfoDao().insert(app);
             }
             appDatabase.disabledPackageDao().deleteAll();
-            new LoadAppAsyncTask("", sortState, context, appDatabase, packageManager).execute();
+            new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
         });
-    }
-
-    private static class RefreshAsynckTask extends AsyncTask<Void, Void, Void> {
-        private WeakReference<Context> contextReference;
-        private AppDatabase appDatabase;
-        private PackageManager packageManager;
-        private int sortState;
-
-        RefreshAsynckTask(int sortState, Context context, AppDatabase appDatabase, PackageManager packageManager) {
-            this.sortState = sortState;
-            this.contextReference = new WeakReference<>(context);
-            this.appDatabase = appDatabase;
-            this.packageManager = packageManager;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            appDatabase.applicationInfoDao().deleteAll();
-            AppsListDBInitializer.getInstance().fillPackageDb(packageManager);
-
-            appDatabase.disabledPackageDao().deleteAll();
-            List<DisabledPackage> disabledPackages = new ArrayList<>();
-            List<AppInfo> disabledApps = appDatabase.applicationInfoDao().getDisabledApps();
-            for (AppInfo appInfo : disabledApps) {
-                DisabledPackage disabledPackage = new DisabledPackage();
-                disabledPackage.packageName = appInfo.packageName;
-                disabledPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
-                disabledPackages.add(disabledPackage);
-            }
-            appDatabase.disabledPackageDao().insertAll(disabledPackages);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Context context = contextReference.get();
-            if (context != null) {
-                SwipeRefreshLayout swipeContainer = ((Activity) context).findViewById(R.id.swipeContainer);
-                swipeContainer.setRefreshing(false);
-
-                new LoadAppAsyncTask("", sortState, context, appDatabase, packageManager).execute();
-            }
-        }
     }
 
     private static class SetAppAsyncTask extends AsyncTask<Void, Void, Boolean> {
@@ -301,60 +260,6 @@ public class PackageDisablerFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean state) {
             ((Switch) viewWeakReference.get().findViewById(R.id.switchDisable)).setChecked(!state);
-        }
-    }
-
-    private static class LoadAppAsyncTask extends AsyncTask<Void, Void, List<AppInfo>> {
-        private WeakReference<Context> contextReference;
-        private AppDatabase appDatabase;
-        private PackageManager packageManager;
-        private String text;
-        private int sortState;
-
-        LoadAppAsyncTask(String text, int sortState, Context context, AppDatabase appDatabase, PackageManager packageManager) {
-            this.text = text;
-            this.sortState = sortState;
-            this.contextReference = new WeakReference<>(context);
-            this.appDatabase = appDatabase;
-            this.packageManager = packageManager;
-        }
-
-        @Override
-        protected List<AppInfo> doInBackground(Void... voids) {
-            return getListFromDb();
-        }
-
-        @Override
-        protected void onPostExecute(List<AppInfo> packageList) {
-            Context context = contextReference.get();
-            if (context != null) {
-                AppDisablerAdapter adapter = new AppDisablerAdapter(packageList, context, packageManager);
-                ListView listView = ((Activity)context).findViewById(R.id.installed_apps_list);
-                listView.setAdapter(adapter);
-                listView.invalidateViews();
-            }
-        }
-
-        private List<AppInfo> getListFromDb() {
-            String filterText = '%' + text + '%';
-            switch (sortState) {
-                case SORTED_ALPHABETICALLY:
-                    if (text.length() == 0) {
-                        return appDatabase.applicationInfoDao().getAll();
-                    }
-                    return appDatabase.applicationInfoDao().getAllAppsWithStrInName(filterText);
-                case SORTED_INSTALL_TIME:
-                    if (text.length() == 0) {
-                        return appDatabase.applicationInfoDao().getAllRecentSort();
-                    }
-                    return appDatabase.applicationInfoDao().getAllAppsWithStrInNameTimeOrder(filterText);
-                case SORTED_DISABLED:
-                    if (text.length() == 0) {
-                        return appDatabase.applicationInfoDao().getAllSortedByDisabled();
-                    }
-                    return appDatabase.applicationInfoDao().getAllAppsWithStrInNameDisabledOrder(filterText);
-            }
-            return null;
         }
     }
 }

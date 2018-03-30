@@ -1,23 +1,13 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+<ListView
+    android:id="@+id/enabled_apps_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.fusionjack.adhell3.fragments.MobileRestricterFragment">
+    android:layout_margin="5dp"/>
 
-    <EditText
-        android:id="@+id/disabledFilter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:imeOptions="actionSearch"
-        android:inputType="textNoSuggestions|textVisiblePassword"
-        android:lines="1"
-        android:singleLine="true" />
-
-    <ListView
-        android:id="@+id/enabled_apps_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"/>
-
-</LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

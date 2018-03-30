@@ -17,6 +17,7 @@ import com.fusionjack.adhell3.db.dao.DisabledPackageDao;
 import com.fusionjack.adhell3.db.dao.FirewallWhitelistedPackageDao;
 import com.fusionjack.adhell3.db.dao.PolicyPackageDao;
 import com.fusionjack.adhell3.db.dao.ReportBlockedUrlDao;
+import com.fusionjack.adhell3.db.dao.RestrictedPackageDao;
 import com.fusionjack.adhell3.db.dao.UserBlockUrlDao;
 import com.fusionjack.adhell3.db.dao.WhiteUrlDao;
 import com.fusionjack.adhell3.db.entity.AppInfo;
@@ -27,6 +28,7 @@ import com.fusionjack.adhell3.db.entity.DisabledPackage;
 import com.fusionjack.adhell3.db.entity.FirewallWhitelistedPackage;
 import com.fusionjack.adhell3.db.entity.PolicyPackage;
 import com.fusionjack.adhell3.db.entity.ReportBlockedUrl;
+import com.fusionjack.adhell3.db.entity.RestrictedPackage;
 import com.fusionjack.adhell3.db.entity.UserBlockUrl;
 import com.fusionjack.adhell3.db.entity.WhiteUrl;
 import com.fusionjack.adhell3.db.migration.Migration_14_15;
@@ -37,6 +39,7 @@ import com.fusionjack.adhell3.db.migration.Migration_18_19;
 import com.fusionjack.adhell3.db.migration.Migration_19_20;
 import com.fusionjack.adhell3.db.migration.Migration_20_21;
 import com.fusionjack.adhell3.db.migration.Migration_21_22;
+import com.fusionjack.adhell3.db.migration.Migration_22_23;
 
 import java.io.File;
 
@@ -46,12 +49,13 @@ import java.io.File;
         BlockUrl.class,
         BlockUrlProvider.class,
         DisabledPackage.class,
+        RestrictedPackage.class,
         FirewallWhitelistedPackage.class,
         PolicyPackage.class,
         ReportBlockedUrl.class,
         UserBlockUrl.class,
         WhiteUrl.class
-}, version = 22)
+}, version = 23)
 public abstract class AppDatabase extends RoomDatabase {
     private static final Migration MIGRATION_14_15 = new Migration_14_15(14, 15);
     private static final Migration MIGRATION_15_16 = new Migration_15_16(15, 16);
@@ -61,6 +65,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final Migration MIGRATION_19_20 = new Migration_19_20(19, 20);
     private static final Migration MIGRATION_20_21 = new Migration_20_21(20, 21);
     private static final Migration MIGRATION_21_22 = new Migration_21_22(21, 22);
+    private static final Migration MIGRATION_22_23 = new Migration_22_23(22, 23);
     private static AppDatabase INSTANCE;
 
     public static AppDatabase getAppDatabase(Context context) {
@@ -89,6 +94,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             .addMigrations(MIGRATION_19_20)
                             .addMigrations(MIGRATION_20_21)
                             .addMigrations(MIGRATION_21_22)
+                            .addMigrations(MIGRATION_22_23)
                             .build();
         }
         return INSTANCE;
@@ -113,6 +119,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract PolicyPackageDao policyPackageDao();
 
     public abstract DisabledPackageDao disabledPackageDao();
+
+    public abstract RestrictedPackageDao restrictedPackageDao();
 
     public abstract FirewallWhitelistedPackageDao firewallWhitelistedPackageDao();
 
