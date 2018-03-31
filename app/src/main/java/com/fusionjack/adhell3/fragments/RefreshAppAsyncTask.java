@@ -38,7 +38,8 @@ public class RefreshAppAsyncTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        // Get first restricted apps before they get deleted
+        // Get first disabled and restricted apps before they get deleted
+        List<AppInfo> disabledApps = appDatabase.applicationInfoDao().getDisabledApps();
         List<AppInfo> restrictedApps = appDatabase.applicationInfoDao().getMobileRestrictedApps();
 
         // Delete all apps info
@@ -48,12 +49,17 @@ public class RefreshAppAsyncTask extends AsyncTask<Void, Void, Void> {
         // Disabled apps
         appDatabase.disabledPackageDao().deleteAll();
         List<DisabledPackage> disabledPackages = new ArrayList<>();
-        List<AppInfo> disabledApps = appDatabase.applicationInfoDao().getDisabledApps();
-        for (AppInfo appInfo : disabledApps) {
-            DisabledPackage disabledPackage = new DisabledPackage();
-            disabledPackage.packageName = appInfo.packageName;
-            disabledPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
-            disabledPackages.add(disabledPackage);
+        for (AppInfo oldAppInfo : disabledApps) {
+            AppInfo newAppInfo = appDatabase.applicationInfoDao().getByPackageName(oldAppInfo.packageName);
+            if (newAppInfo != null) {
+                newAppInfo.disabled = true;
+                appDatabase.applicationInfoDao().insert(newAppInfo);
+
+                DisabledPackage disabledPackage = new DisabledPackage();
+                disabledPackage.packageName = newAppInfo.packageName;
+                disabledPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
+                disabledPackages.add(disabledPackage);
+            }
         }
         appDatabase.disabledPackageDao().insertAll(disabledPackages);
 
