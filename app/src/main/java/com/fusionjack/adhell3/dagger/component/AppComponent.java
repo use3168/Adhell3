@@ -8,6 +8,8 @@ import com.fusionjack.adhell3.dagger.module.AppModule;
 import com.fusionjack.adhell3.dagger.module.EnterpriseModule;
 import com.fusionjack.adhell3.dagger.module.NetworkModule;
 import com.fusionjack.adhell3.dagger.scope.AdhellApplicationScope;
+import com.fusionjack.adhell3.fragments.AdhellPermissionInAppsFragment;
+import com.fusionjack.adhell3.fragments.AdhellPermissionInfoFragment;
 import com.fusionjack.adhell3.fragments.AdhellReportsFragment;
 import com.fusionjack.adhell3.fragments.BlockedUrlSettingFragment;
 import com.fusionjack.adhell3.fragments.BlockerFragment;
@@ -49,5 +51,9 @@ public interface AppComponent {
     void inject(BlockerFragment blockerFragment);
 
     void inject(AdhellAppIntegrity adhellAppIntegrity);
+
+    void inject(AdhellPermissionInfoFragment adhellPermissionInfoFragment);
+
+    void inject(AdhellPermissionInAppsFragment adhellPermissionInAppsFragment);
 
 }

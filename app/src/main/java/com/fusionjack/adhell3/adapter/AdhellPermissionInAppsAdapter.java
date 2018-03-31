@@ -27,29 +27,33 @@ import javax.inject.Inject;
 
 public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPermissionInAppsAdapter.ViewHolder> {
     private static final String TAG = AdhellPermissionInAppsAdapter.class.getCanonicalName();
-    public String currentPermissionName;
+
     @Inject
     PackageManager mPackageManager;
 
     @Nullable
     @Inject
     ApplicationPermissionControlPolicy mAppControlPolicy;
-    Set<String> restrictedPackageNames;
+
+    public String currentPermissionName;
+    private Set<String> permissionBlacklistedPackageNames;
     private List<AppInfo> appInfos;
 
 
-    public AdhellPermissionInAppsAdapter(Context context, List<AppInfo> packageInfos) {
+    public AdhellPermissionInAppsAdapter(List<AppInfo> packageInfos) {
         App.get().getAppComponent().inject(this);
         this.appInfos = packageInfos;
-        updateRestrictedPackages();
+        updatePermissionBlacklistedPackages();
     }
 
-    public void updateRestrictedPackages() {
+    public void updatePermissionBlacklistedPackages() {
+        if (mAppControlPolicy == null) {
+            return;
+        }
+
         List<AppPermissionControlInfo> appPermissionControlInfos = mAppControlPolicy.getPackagesFromPermissionBlackList();
-        if (appPermissionControlInfos == null
-                || appPermissionControlInfos.size() == 0
-                ) {
-            restrictedPackageNames = null;
+        if (appPermissionControlInfos == null || appPermissionControlInfos.size() == 0) {
+            permissionBlacklistedPackageNames = null;
             return;
         }
         Log.w(TAG, appPermissionControlInfos.toString());
@@ -62,7 +66,7 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
                 continue;
             }
             Log.w(TAG, appPermissionControlInfo.mapEntries.toString());
-            restrictedPackageNames = appPermissionControlInfo.mapEntries.get(currentPermissionName);
+            permissionBlacklistedPackageNames = appPermissionControlInfo.mapEntries.get(currentPermissionName);
         }
     }
 
@@ -92,10 +96,10 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
         }
         holder.appIconImageView.setImageDrawable(icon);
         holder.appPermissionSwitch.setChecked(true);
-        if (restrictedPackageNames == null) {
+        if (permissionBlacklistedPackageNames == null) {
             return;
         }
-        if (!restrictedPackageNames.contains(appInfo.packageName)) {
+        if (!permissionBlacklistedPackageNames.contains(appInfo.packageName)) {
             return;
         }
 
@@ -119,23 +123,27 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
 
         ViewHolder(View itemView) {
             super(itemView);
-            appIconImageView = (ImageView) itemView.findViewById(R.id.appIcon);
-            appNameTextView = (TextView) itemView.findViewById(R.id.appName);
-            appPackageNameTextView = (TextView) itemView.findViewById(R.id.packName);
-            systemOrNotTextView = (TextView) itemView.findViewById(R.id.systemOrNot);
-            appPermissionSwitch = (Switch) itemView.findViewById(R.id.appPermission);
+            appIconImageView = itemView.findViewById(R.id.appIcon);
+            appNameTextView = itemView.findViewById(R.id.appName);
+            appPackageNameTextView = itemView.findViewById(R.id.packName);
+            systemOrNotTextView = itemView.findViewById(R.id.systemOrNot);
+            appPermissionSwitch = itemView.findViewById(R.id.appPermission);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            if (mAppControlPolicy == null) {
+                return;
+            }
+
             int position = getAdapterPosition();
             Log.d(TAG, "Position clicked: " + position);
             AppInfo appInfo = appInfos.get(position);
             Log.d(TAG, appInfo.packageName);
             List<String> list = new ArrayList<>();
             list.add(appInfo.packageName);
-            if (restrictedPackageNames != null && restrictedPackageNames.contains(appInfo.packageName)) {
+            if (permissionBlacklistedPackageNames != null && permissionBlacklistedPackageNames.contains(appInfo.packageName)) {
                 boolean isBlacklisted = mAppControlPolicy.removePackagesFromPermissionBlackList(currentPermissionName, list);
                 Log.d(TAG, "Is removed: " + isBlacklisted);
                 if (isBlacklisted) {
@@ -148,7 +156,7 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
                     appPermissionSwitch.setChecked(false);
                 }
             }
-            updateRestrictedPackages();
+            updatePermissionBlacklistedPackages();
         }
     }
 }

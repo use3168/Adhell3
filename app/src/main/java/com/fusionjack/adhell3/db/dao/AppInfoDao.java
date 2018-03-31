@@ -39,7 +39,7 @@ public interface AppInfoDao {
     LiveData<List<AppInfo>> getAllSortedByWhitelist();
 
     @Query("SELECT * FROM AppInfo WHERE system = 0 AND disabled = 0 ORDER BY appName ASC")
-    LiveData<List<AppInfo>> getAllNonSystemLiveData();
+    List<AppInfo> getUserApps();
 
     @Query("SELECT * FROM AppInfo ORDER BY appName ASC")
     List<AppInfo> getAll();

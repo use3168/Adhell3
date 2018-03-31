@@ -17,13 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.fusionjack.adhell3.App;
 import com.fusionjack.adhell3.R;
 import com.fusionjack.adhell3.adapter.AdhellPermissionInfoAdapter;
 import com.fusionjack.adhell3.adapter.ItemClickSupport;
+import com.fusionjack.adhell3.db.AppDatabase;
 import com.fusionjack.adhell3.model.AdhellPermissionInfo;
 import com.fusionjack.adhell3.viewmodel.SharedAppPermissionViewModel;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class AdhellPermissionInfoFragment extends Fragment {
     private static final String TAG = AdhellPermissionInfoFragment.class.getCanonicalName();
@@ -31,10 +35,20 @@ public class AdhellPermissionInfoFragment extends Fragment {
     private AppCompatActivity parentActivity;
     private SharedAppPermissionViewModel sharedAppPermissionViewModel;
     private FragmentManager fragmentManager;
+    private AppDatabase appDatabase;
+
+    @Inject
+    PackageManager packageManager;
+
+    public AdhellPermissionInfoFragment() {
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.get().getAppComponent().inject(this);
+        appDatabase = AppDatabase.getAppDatabase(getContext());
+
         parentActivity = (AppCompatActivity) getActivity();
         boolean isPermissionGranted = (this.getContext()
                 .checkCallingOrSelfPermission("android.permission.sec.MDM_APP_PERMISSION_MGMT")
@@ -59,18 +73,13 @@ public class AdhellPermissionInfoFragment extends Fragment {
         }
         sharedAppPermissionViewModel = ViewModelProviders.of(getActivity()).get(SharedAppPermissionViewModel.class);
         fragmentManager = getActivity().getSupportFragmentManager();
-        adhellPermissionInfos = AdhellPermissionInfo.loadPermissions();
+        adhellPermissionInfos = AdhellPermissionInfo.createPermissions(appDatabase, packageManager);
         View view = inflater.inflate(R.layout.fragment_adhell_permission_info, container, false);
         RecyclerView permissionInfoRecyclerView = view.findViewById(R.id.permissionInfoRecyclerView);
         AdhellPermissionInfoAdapter adhellPermissionInfoAdapter = new AdhellPermissionInfoAdapter(this.getContext(), adhellPermissionInfos);
         permissionInfoRecyclerView.setAdapter(adhellPermissionInfoAdapter);
         permissionInfoRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL);
-
-        sharedAppPermissionViewModel.loadInstalledAppsLiveData().observe(this, installedApps -> {
-            sharedAppPermissionViewModel.installedApps = installedApps;
-        });
-
 
         permissionInfoRecyclerView.addItemDecoration(itemDecoration);
         ItemClickSupport.addTo(permissionInfoRecyclerView).setOnItemClickListener(
