@@ -55,6 +55,14 @@ gradlew clean assembleDebug
 ```
 - The generated apk is located in `app\build\outputs\apk\debug`
 
+## Prerequisite for using Adhell
+You need a license key in order to use Adhell. You can get this license from Samsung for free but it needs to be renewed every 3 months. Don't forget to revoke the old license key before creating a new one.
+- Enroll as a developer with this link: https://seap.samsung.com/enrollment
+- Generate a license key with this link: https://seap.samsung.com/license-keys/create#section-knox-standard-sdk
+- Choose `Enterprise License Key`
+- Give an alias name, e.g. test
+- Click on `Generate License Key`
+
 ## FAQ
 ### How Adhell works?
 With Knox Standard SDK: https://seap.samsung.com/sdk/knox-standard-android
