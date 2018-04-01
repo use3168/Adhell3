@@ -195,4 +195,5 @@
     <string name="enabled_all_restricted">Enabling all restricted apps</string>
     <string name="show_blocked_urls">Show blocked URLs</string>
     <string name="total_blocked_urls">Total blocked URLs:&#160;</string>
+    <string name="mobile_restricter_info">To take effect, turn off and turn on Adhell after restricting apps</string>
 </resources>
