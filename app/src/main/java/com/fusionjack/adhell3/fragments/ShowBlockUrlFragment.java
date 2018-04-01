@@ -57,7 +57,7 @@ public class ShowBlockUrlFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String text) {
-                new FilterUrlAsyncTask(text, getContext(), appDatabase).execute();
+                new FilterUrlAsyncTask(text, getArguments(), getContext(), appDatabase).execute();
                 return false;
             }
         });
@@ -101,9 +101,11 @@ public class ShowBlockUrlFragment extends Fragment {
         private WeakReference<Context> contextReference;
         private AppDatabase appDatabase;
         private String text;
+        private Bundle bundle;
 
-        FilterUrlAsyncTask(String text, Context context, AppDatabase appDatabase) {
+        FilterUrlAsyncTask(String text, Bundle bundle, Context context, AppDatabase appDatabase) {
             this.text = text;
+            this.bundle = bundle;
             this.contextReference = new WeakReference<>(context);
             this.appDatabase = appDatabase;
         }
@@ -111,9 +113,14 @@ public class ShowBlockUrlFragment extends Fragment {
         @Override
         protected List<String> doInBackground(Void... o) {
             final String filterText = '%' + text + '%';
-            return text.isEmpty() ?
-                    BlockUrlUtils.getAllBlockedUrls(appDatabase) :
-                    BlockUrlUtils.getBlockedUrls(filterText, appDatabase);
+            if (bundle == null) {
+                return text.isEmpty() ? BlockUrlUtils.getAllBlockedUrls(appDatabase) :
+                        BlockUrlUtils.getFilteredBlockedUrls(filterText, appDatabase);
+            }
+
+            final long providerId = bundle.getLong("provider");
+            return text.isEmpty() ? BlockUrlUtils.getBlockedUrls(providerId, appDatabase) :
+                    BlockUrlUtils.getFilteredBlockedUrls(filterText, providerId, appDatabase);
         }
 
         @Override

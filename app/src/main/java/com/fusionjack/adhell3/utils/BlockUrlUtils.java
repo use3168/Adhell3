@@ -117,7 +117,7 @@ public class BlockUrlUtils {
         return result;
     }
 
-    public static List<String> getBlockedUrls(String filterText, AppDatabase appDatabase) {
+    public static List<String> getFilteredBlockedUrls(String filterText, AppDatabase appDatabase) {
         List<String> result = new ArrayList<>();
         List<BlockUrlProvider> blockUrlProviders = appDatabase.blockUrlProviderDao().getBlockUrlProviderBySelectedFlag(1);
         for (BlockUrlProvider blockUrlProvider : blockUrlProviders) {
@@ -125,6 +125,15 @@ public class BlockUrlUtils {
             for (BlockUrl blockUrl: blockUrls) {
                 result.add(blockUrl.url);
             }
+        }
+        return result;
+    }
+
+    public static List<String> getFilteredBlockedUrls(String filterText, long providerId, AppDatabase appDatabase) {
+        List<String> result = new ArrayList<>();
+        List<BlockUrl> blockUrls = appDatabase.blockUrlDao().getByUrl(providerId, filterText);
+        for (BlockUrl blockUrl : blockUrls) {
+            result.add(blockUrl.url);
         }
         return result;
     }
