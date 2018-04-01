@@ -5,6 +5,7 @@ import android.app.enterprise.ApplicationPermissionControlPolicy;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,7 +18,10 @@ import android.widget.TextView;
 
 import com.fusionjack.adhell3.App;
 import com.fusionjack.adhell3.R;
+import com.fusionjack.adhell3.db.AppDatabase;
 import com.fusionjack.adhell3.db.entity.AppInfo;
+import com.fusionjack.adhell3.db.entity.AppPermission;
+import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +42,11 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
     public String currentPermissionName;
     private Set<String> permissionBlacklistedPackageNames;
     private List<AppInfo> appInfos;
+    private AppDatabase appDatabase;
 
-
-    public AdhellPermissionInAppsAdapter(List<AppInfo> packageInfos) {
+    public AdhellPermissionInAppsAdapter(List<AppInfo> packageInfos, AppDatabase appDatabase) {
         App.get().getAppComponent().inject(this);
+        this.appDatabase = appDatabase;
         this.appInfos = packageInfos;
         updatePermissionBlacklistedPackages();
     }
@@ -138,22 +143,29 @@ public class AdhellPermissionInAppsAdapter extends RecyclerView.Adapter<AdhellPe
             }
 
             int position = getAdapterPosition();
-            Log.d(TAG, "Position clicked: " + position);
             AppInfo appInfo = appInfos.get(position);
-            Log.d(TAG, appInfo.packageName);
             List<String> list = new ArrayList<>();
             list.add(appInfo.packageName);
+
+            AppPermission appPermission = new AppPermission();
+            appPermission.packageName = appInfo.packageName;
+            appPermission.permissionName = currentPermissionName;
+            appPermission.permissionStatus = AppPermission.STATUS_DISALLOW;
+            appPermission.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
+
             if (permissionBlacklistedPackageNames != null && permissionBlacklistedPackageNames.contains(appInfo.packageName)) {
                 boolean isBlacklisted = mAppControlPolicy.removePackagesFromPermissionBlackList(currentPermissionName, list);
                 Log.d(TAG, "Is removed: " + isBlacklisted);
                 if (isBlacklisted) {
                     appPermissionSwitch.setChecked(true);
+                    AsyncTask.execute(() -> appDatabase.appPermissionDao().delete(appPermission));
                 }
             } else {
                 boolean success = mAppControlPolicy.addPackagesToPermissionBlackList(currentPermissionName, list);
                 Log.d(TAG, "Is added to blacklist: " + success);
                 if (success) {
                     appPermissionSwitch.setChecked(false);
+                    AsyncTask.execute(() -> appDatabase.appPermissionDao().insert(appPermission));
                 }
             }
             updatePermissionBlacklistedPackages();
