@@ -56,6 +56,7 @@ import java.io.File;
         UserBlockUrl.class,
         WhiteUrl.class
 }, version = 23)
+
 public abstract class AppDatabase extends RoomDatabase {
     private static final Migration MIGRATION_14_15 = new Migration_14_15(14, 15);
     private static final Migration MIGRATION_15_16 = new Migration_15_16(15, 16);
@@ -68,19 +69,22 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final Migration MIGRATION_22_23 = new Migration_22_23(22, 23);
     private static AppDatabase INSTANCE;
 
+    public static final String DATABASE_FOLDER = "adhell3";
+    public static final String DATABASE_FILE = "adhell-database";
+
     public static AppDatabase getAppDatabase(Context context) {
         if (INSTANCE == null) {
             String location;
             File sd = Environment.getExternalStorageDirectory();
             if (sd.canWrite()) {
-                File adhell3 = new File(sd, "adhell3");
+                File adhell3 = new File(sd, DATABASE_FOLDER);
                 if (!adhell3.exists()) {
                     adhell3.mkdir();
                 }
-                File db = new File(adhell3, "adhell-database");
+                File db = new File(adhell3, DATABASE_FILE);
                 location = db.getAbsolutePath();
             } else {
-                location = "adhell-database";
+                location = DATABASE_FILE;
             }
 
             INSTANCE =

@@ -4,7 +4,21 @@
     <item
         android:id="@+id/action_app_settings"
         android:icon="@drawable/ic_settings_white_24dp"
-        android:orderInCategory="100"
         android:title="@string/adhell_settings"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_overflow"
+        android:icon="@drawable/overflow"
+        android:title="Overflow"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/backup_database"
+                android:title="@string/backup_database" />
+            <item
+                android:id="@+id/restore_database"
+                android:title="@string/restore_database" />
+        </menu>
+    </item>
 </menu>

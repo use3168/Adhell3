@@ -17,6 +17,7 @@ import com.fusionjack.adhell3.fragments.MobileRestricterFragment;
 import com.fusionjack.adhell3.fragments.PackageDisablerFragment;
 import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 import com.fusionjack.adhell3.utils.AppsListDBInitializer;
+import com.fusionjack.adhell3.db.DatabaseFactory;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 import com.fusionjack.adhell3.viewmodel.AdhellWhitelistAppsViewModel;
 import com.fusionjack.adhell3.viewmodel.SharedAppPermissionViewModel;
@@ -55,5 +56,7 @@ public interface AppComponent {
     void inject(AdhellPermissionInfoFragment adhellPermissionInfoFragment);
 
     void inject(AdhellPermissionInAppsFragment adhellPermissionInAppsFragment);
+
+    void inject(DatabaseFactory databaseFactory);
 
 }

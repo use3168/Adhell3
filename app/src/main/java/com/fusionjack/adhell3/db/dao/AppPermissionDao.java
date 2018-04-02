@@ -24,4 +24,7 @@ public interface AppPermissionDao {
 
     @Delete
     void delete(AppPermission appPermission);
+
+    @Query("DELETE FROM AppPermission")
+    void deleteAll();
 }

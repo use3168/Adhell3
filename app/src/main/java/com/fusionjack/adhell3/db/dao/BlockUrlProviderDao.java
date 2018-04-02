@@ -27,6 +27,9 @@ public interface BlockUrlProviderDao {
     @Query("SELECT * FROM BlockUrlProviders WHERE url = :url")
     BlockUrlProvider getByUrl(String url);
 
+    @Query("SELECT * FROM BlockUrlProviders WHERE _id = :id")
+    BlockUrlProvider getById(long id);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertAll(BlockUrlProvider... urlProviders);
 
@@ -41,5 +44,8 @@ public interface BlockUrlProviderDao {
 
     @Query("DELETE FROM BlockUrlProviders WHERE deletable = 0")
     void deleteDefault();
+
+    @Query("DELETE FROM BlockUrlProviders")
+    void deleteAll();
 
 }

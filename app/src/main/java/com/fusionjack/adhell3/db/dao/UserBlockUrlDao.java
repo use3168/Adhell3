@@ -25,11 +25,17 @@ public interface UserBlockUrlDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(UserBlockUrl userBlockUrl);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<UserBlockUrl> userBlockUrls);
+
     @Delete
     void delete(UserBlockUrl userBlockUrl);
 
     @Query("DELETE FROM UserBlockUrl WHERE url = :url")
     void deleteByUrl(String url);
+
+    @Query("DELETE FROM UserBlockUrl")
+    void deleteAll();
 
     @Query("SELECT * FROM UserBlockUrl WHERE url LIKE :url")
     List<UserBlockUrl> getByUrl(String url);

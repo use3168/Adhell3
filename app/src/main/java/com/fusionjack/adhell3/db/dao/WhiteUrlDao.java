@@ -26,10 +26,16 @@ public interface WhiteUrlDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(WhiteUrl whiteUrl);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<WhiteUrl> whiteUrls);
+
     @Query("DELETE FROM WhiteUrl WHERE url = :url")
     void deleteByUrl(String url);
 
     @Delete
     void delete(WhiteUrl whiteUrl);
+
+    @Query("DELETE FROM WhiteUrl")
+    void deleteAll();
 
 }

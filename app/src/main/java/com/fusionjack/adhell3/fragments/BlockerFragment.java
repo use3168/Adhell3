@@ -1,10 +1,14 @@
 package com.fusionjack.adhell3.fragments;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +25,15 @@ import com.fusionjack.adhell3.R;
 import com.fusionjack.adhell3.blocker.ContentBlocker;
 import com.fusionjack.adhell3.blocker.ContentBlocker56;
 import com.fusionjack.adhell3.blocker.ContentBlocker57;
+import com.fusionjack.adhell3.db.AppDatabase;
+import com.fusionjack.adhell3.db.DatabaseFactory;
+import com.fusionjack.adhell3.db.entity.BlockUrl;
+import com.fusionjack.adhell3.db.entity.BlockUrlProvider;
+import com.fusionjack.adhell3.utils.BlockUrlUtils;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
+
+import java.util.Date;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -37,6 +49,8 @@ public class BlockerFragment extends Fragment {
     private Button mPolicyChangeButton;
     private TextView isSupportedTextView;
     private ContentBlocker contentBlocker;
+    private AppDatabase appDatabase;
+
     private final Observable<Boolean> toggleAdhellSwitchObservable = Observable.create(emitter -> {
         try {
             if (contentBlocker.isEnabled()) {
@@ -59,7 +73,6 @@ public class BlockerFragment extends Fragment {
             emitter.onComplete();
         }
     });
-    private TextView warningMessageTextView;
     private Button reportButton;
 
     @Override
@@ -74,6 +87,7 @@ public class BlockerFragment extends Fragment {
         App.get().getAppComponent().inject(this);
         fragmentManager = getActivity().getSupportFragmentManager();
         parentActivity = (AppCompatActivity) getActivity();
+        appDatabase = AppDatabase.getAppDatabase(getContext());
     }
 
     @Override
@@ -92,6 +106,12 @@ public class BlockerFragment extends Fragment {
                         .addToBackStack(AppSettingsFragment.class.getCanonicalName())
                         .commit();
                 return true;
+            case R.id.backup_database:
+                new BackupDatabaseAsyncTask(getActivity()).execute();
+                break;
+            case R.id.restore_database:
+                new RestoreDatabaseAsyncTask(this, getActivity(), appDatabase).execute();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -110,7 +130,7 @@ public class BlockerFragment extends Fragment {
         mPolicyChangeButton = view.findViewById(R.id.policyChangeButton);
         isSupportedTextView = view.findViewById(R.id.isSupportedTextView);
         reportButton = view.findViewById(R.id.adhellReportsButton);
-        warningMessageTextView = view.findViewById(R.id.warningMessageTextView);
+        TextView warningMessageTextView = view.findViewById(R.id.warningMessageTextView);
         warningMessageTextView.setVisibility(View.GONE);
         contentBlocker = DeviceAdminInteractor.getInstance().getContentBlocker();
         if (!(contentBlocker instanceof ContentBlocker57
@@ -183,6 +203,117 @@ public class BlockerFragment extends Fragment {
         }
         if (!contentBlocker.isEnabled()) {
             reportButton.setVisibility(View.GONE);
+        }
+    }
+
+    private static class BackupDatabaseAsyncTask extends AsyncTask<Void, Void, String> {
+        private ProgressDialog dialog;
+        private AlertDialog.Builder builder;
+
+        BackupDatabaseAsyncTask(Activity activity) {
+            dialog = new ProgressDialog(activity);
+            builder = new AlertDialog.Builder(activity);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog.setMessage("Backup database is running...");
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... args) {
+            try {
+                DatabaseFactory.getInstance().backupDatabase();
+                return null;
+            } catch (Exception e) {
+                return e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String message) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
+            if (message == null) {
+                builder.setMessage("Backup database is finished");
+                builder.setTitle("Info");
+            } else {
+                builder.setMessage(message);
+                builder.setTitle("Error");
+            }
+            builder.create().show();
+        }
+    }
+
+    private static class RestoreDatabaseAsyncTask extends AsyncTask<Void, String, String> {
+        private ProgressDialog dialog;
+        private AlertDialog.Builder builder;
+        private BlockerFragment fragment;
+        private AppDatabase appDatabase;
+
+        RestoreDatabaseAsyncTask(BlockerFragment fragment, Activity activity, AppDatabase appDatabase) {
+            this.fragment = fragment;
+            this.builder = new AlertDialog.Builder(activity);
+            this.dialog = new ProgressDialog(activity);
+            this.appDatabase = appDatabase;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog.setMessage("Restore database is running...");
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... args) {
+            try {
+                DatabaseFactory.getInstance().restoreDatabase();
+
+                publishProgress("Updating all providers...");
+
+                List<BlockUrlProvider> providers = appDatabase.blockUrlProviderDao().getAll2();
+                appDatabase.blockUrlDao().deleteAll();
+                for (BlockUrlProvider provider : providers) {
+                    try {
+                        List<BlockUrl> blockUrls = BlockUrlUtils.loadBlockUrls(provider);
+                        provider.count = blockUrls.size();
+                        provider.lastUpdated = new Date();
+                        appDatabase.blockUrlProviderDao().updateBlockUrlProviders(provider);
+                        appDatabase.blockUrlDao().insertAll(blockUrls);
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage(), e);
+                    }
+                }
+
+                return null;
+            } catch (Exception e) {
+                return e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            dialog.setMessage(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String message) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
+            fragment.updateUserInterface();
+            if (message == null) {
+                builder.setMessage("Restore database is finished. Turn on Adhell.");
+                builder.setTitle("Info");
+            } else {
+                builder.setMessage(message);
+                builder.setTitle("Error");
+            }
+            builder.create().show();
         }
     }
 }

@@ -22,6 +22,7 @@ import com.fusionjack.adhell3.adapter.BlockUrlProviderAdapter;
 import com.fusionjack.adhell3.db.AppDatabase;
 import com.fusionjack.adhell3.db.entity.BlockUrl;
 import com.fusionjack.adhell3.db.entity.BlockUrlProvider;
+import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 import com.fusionjack.adhell3.utils.BlockUrlUtils;
 import com.fusionjack.adhell3.viewmodel.BlockUrlProvidersViewModel;
 
@@ -114,6 +115,8 @@ public class CustomBlockUrlProviderFragment extends Fragment {
                     blockUrlProvider.lastUpdated = new Date();
                     blockUrlProvider.selected = false;
                     blockUrlProvider.id = mDb.blockUrlProviderDao().insertAll(blockUrlProvider)[0];
+                    blockUrlProvider.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
+
                     // Try to download and parse urls
                     try {
                         List<BlockUrl> blockUrls = BlockUrlUtils.loadBlockUrls(blockUrlProvider);

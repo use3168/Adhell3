@@ -17,4 +17,7 @@ public interface FirewallWhitelistedPackageDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<FirewallWhitelistedPackage> firewallWhitelistedPackages);
+
+    @Query("DELETE FROM FirewallWhitelistedPackage")
+    void deleteAll();
 }
