@@ -23,12 +23,6 @@
         app:showAsAction="always">
         <menu>
             <item
-                android:id="@+id/disabler_import_storage"
-                android:title="@string/disabler_import_storage" />
-            <item
-                android:id="@+id/disabler_export_storage"
-                android:title="@string/disabler_export_storage" />
-            <item
                 android:id="@+id/disabler_enable_all"
                 android:title="@string/disabler_enable_all" />
         </menu>

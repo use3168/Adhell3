@@ -143,65 +143,12 @@ public class PackageDisablerFragment extends Fragment {
                 Toast.makeText(context, getString(R.string.app_list_sorted_by_disabled), Toast.LENGTH_SHORT).show();
                 new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
                 break;
-            case R.id.disabler_import_storage:
-                Toast.makeText(context, getString(R.string.imported_from_storage), Toast.LENGTH_SHORT).show();
-                importList();
-                break;
-            case R.id.disabler_export_storage:
-                Toast.makeText(context, getString(R.string.exported_to_storage), Toast.LENGTH_SHORT).show();
-                exportList();
-                break;
             case R.id.disabler_enable_all:
                 Toast.makeText(context, getString(R.string.enabled_all_disabled), Toast.LENGTH_SHORT).show();
                 enableAllPackages();
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void importList() {
-        AsyncTask.execute(() -> {
-            if (appPolicy == null) {
-                return;
-            }
-
-            File file = new File(Environment.getExternalStorageDirectory(), "adhell_packages.txt");
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                appDatabase.disabledPackageDao().deleteAll();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    AppInfo appInfo = appDatabase.applicationInfoDao().getByPackageName(line);
-                    appInfo.disabled = true;
-                    appPolicy.setDisableApplication(line);
-                    appDatabase.applicationInfoDao().insert(appInfo);
-
-                    DisabledPackage disabledPackage = new DisabledPackage();
-                    disabledPackage.packageName = line;
-                    disabledPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
-                    appDatabase.disabledPackageDao().insert(disabledPackage);
-                }
-                new LoadAppAsyncTask("", sortState, layout, true, context, appDatabase, packageManager).execute();
-            }
-            catch (IOException e) {
-                Log.e("Exception", "File write failed: " + e.toString());
-            }
-        });
-    }
-
-    private void exportList() {
-        AsyncTask.execute(() -> {
-            File file = new File(Environment.getExternalStorageDirectory(), "adhell_packages.txt");
-            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file))) {
-                writer.write("");
-                List<AppInfo> disabledAppList = appDatabase.applicationInfoDao().getDisabledApps();
-                for (AppInfo app : disabledAppList) {
-                    writer.append(app.packageName);
-                    writer.append("\n");
-                }
-            } catch (IOException e) {
-                Log.e("Exception", "File write failed: " + e.toString());
-            }
-        });
     }
 
     private void enableAllPackages() {
