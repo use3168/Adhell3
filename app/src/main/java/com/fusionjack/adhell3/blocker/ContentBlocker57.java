@@ -66,6 +66,31 @@ public class ContentBlocker57 implements ContentBlocker {
         return contentBlocker56.isEnabled();
     }
 
+    @Override
+    public void processCustomRules() throws Exception {
+        contentBlocker56.processCustomRules();
+    }
+
+    @Override
+    public void processMobileRestrictedApps() throws Exception {
+        contentBlocker56.processMobileRestrictedApps();
+    }
+
+    @Override
+    public void processWhitelistedApps() throws Exception {
+        contentBlocker56.processWhitelistedApps();
+    }
+
+    @Override
+    public void processWhitelistedDomains() throws Exception {
+        contentBlocker56.processWhitelistedDomains();
+    }
+
+    @Override
+    public void processBlockedDomains() throws Exception {
+        contentBlocker56.processBlockedDomains();
+    }
+
     public void setDns(String dns1, String dns2) {
         DomainFilterRule domainFilterRule = new DomainFilterRule(new AppIdentity(Firewall.FIREWALL_ALL_PACKAGES, null));
         domainFilterRule.setDns1(dns1);

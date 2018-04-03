@@ -35,45 +35,16 @@ import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-
 public class BlockerFragment extends Fragment {
     private static final String TAG = BlockerFragment.class.getCanonicalName();
+
     private FragmentManager fragmentManager;
     private AppCompatActivity parentActivity;
-    private CompositeDisposable disposable = new CompositeDisposable();
     private Button mPolicyChangeButton;
+    private Button reportButton;
     private TextView isSupportedTextView;
     private ContentBlocker contentBlocker;
     private AppDatabase appDatabase;
-
-    private final Observable<Boolean> toggleAdhellSwitchObservable = Observable.create(emitter -> {
-        try {
-            if (contentBlocker.isEnabled()) {
-                // Enabled. Trying to disable
-                Log.d(TAG, "Firewall policy was enabled, trying to disable");
-                contentBlocker.disableBlocker();
-                emitter.onNext(false);
-            } else {
-                contentBlocker.disableBlocker();
-                // Disabled. Enabling
-                Log.d(TAG, "Policy disabled, trying to enable");
-                contentBlocker.enableBlocker();
-                emitter.onNext(true);
-            }
-            emitter.onComplete();
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to turn on ad blocker", e);
-            contentBlocker.disableBlocker();
-            emitter.onNext(false);
-            emitter.onComplete();
-        }
-    });
-    private Button reportButton;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -88,11 +59,6 @@ public class BlockerFragment extends Fragment {
         fragmentManager = getActivity().getSupportFragmentManager();
         parentActivity = (AppCompatActivity) getActivity();
         appDatabase = AppDatabase.getAppDatabase(getContext());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -117,26 +83,27 @@ public class BlockerFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        getActivity().setTitle(getString(R.string.blocker_fragment_title));
-        View view = inflater.inflate(R.layout.fragment_blocker, container, false);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (parentActivity.getSupportActionBar() != null) {
             parentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             parentActivity.getSupportActionBar().setHomeButtonEnabled(false);
         }
+        getActivity().setTitle(getString(R.string.blocker_fragment_title));
+        setHasOptionsMenu(true);
 
+        View view = inflater.inflate(R.layout.fragment_blocker, container, false);
         mPolicyChangeButton = view.findViewById(R.id.policyChangeButton);
         isSupportedTextView = view.findViewById(R.id.isSupportedTextView);
         reportButton = view.findViewById(R.id.adhellReportsButton);
         TextView warningMessageTextView = view.findViewById(R.id.warningMessageTextView);
-        warningMessageTextView.setVisibility(View.GONE);
+
         contentBlocker = DeviceAdminInteractor.getInstance().getContentBlocker();
-        if (!(contentBlocker instanceof ContentBlocker57
-                || contentBlocker instanceof ContentBlocker56)) {
+        if (!(contentBlocker instanceof ContentBlocker56 || contentBlocker instanceof ContentBlocker57)) {
             warningMessageTextView.setVisibility(View.VISIBLE);
+        } else {
+            warningMessageTextView.setVisibility(View.GONE);
         }
+
         if (contentBlocker != null && contentBlocker.isEnabled()) {
             mPolicyChangeButton.setText(R.string.block_button_text_turn_off);
             isSupportedTextView.setText(R.string.block_enabled);
@@ -144,30 +111,14 @@ public class BlockerFragment extends Fragment {
             mPolicyChangeButton.setText(R.string.block_button_text_turn_on);
             isSupportedTextView.setText(R.string.block_disabled);
         }
+
         mPolicyChangeButton.setOnClickListener(v -> {
             Log.d(TAG, "Adhell switch button has been clicked");
-            mPolicyChangeButton.setEnabled(false);
-            if (!contentBlocker.isEnabled()) {
-                mPolicyChangeButton.setText(R.string.block_button_text_enabling);
-                isSupportedTextView.setText(getString(R.string.please_wait));
-            } else {
-                mPolicyChangeButton.setText(R.string.block_button_text_disabling);
-                isSupportedTextView.setText(getString(R.string.wait_deleting));
-                reportButton.setVisibility(View.GONE);
-            }
-            Disposable subscribe = toggleAdhellSwitchObservable
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(isEnabled -> {
-                        updateUserInterface();
-                        mPolicyChangeButton.setEnabled(true);
-                    });
-            disposable.add(subscribe);
+            new SetFirewallAsyncTask(this, getActivity(), appDatabase).execute();
         });
-        setHasOptionsMenu(true);
 
-        if ((contentBlocker instanceof ContentBlocker57
-                || contentBlocker instanceof ContentBlocker56) && contentBlocker.isEnabled()) {
+        if (contentBlocker.isEnabled() &&
+                (contentBlocker instanceof ContentBlocker56 || contentBlocker instanceof ContentBlocker57)) {
             reportButton.setOnClickListener(view1 -> {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentContainer, new AdhellReportsFragment());
@@ -181,7 +132,6 @@ public class BlockerFragment extends Fragment {
     }
 
     private void updateUserInterface() {
-        Log.d(TAG, "Enterting onPostExecute() method");
         if (contentBlocker.isEnabled()) {
             mPolicyChangeButton.setText(R.string.block_button_text_turn_off);
             isSupportedTextView.setText(R.string.block_enabled);
@@ -189,20 +139,115 @@ public class BlockerFragment extends Fragment {
             mPolicyChangeButton.setText(R.string.block_button_text_turn_on);
             isSupportedTextView.setText(R.string.block_disabled);
         }
-        Log.d(TAG, "Leaving onPostExecute() method");
-        if (contentBlocker.isEnabled()
-                && (contentBlocker instanceof ContentBlocker56
-                || contentBlocker instanceof ContentBlocker57)) {
+
+        if (contentBlocker.isEnabled() &&
+                (contentBlocker instanceof ContentBlocker56 || contentBlocker instanceof ContentBlocker57)) {
+            reportButton.setVisibility(View.VISIBLE);
             reportButton.setOnClickListener(view1 -> {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentContainer, new AdhellReportsFragment());
                 fragmentTransaction.addToBackStack("main_to_reports");
                 fragmentTransaction.commit();
             });
-            reportButton.setVisibility(View.VISIBLE);
-        }
-        if (!contentBlocker.isEnabled()) {
+        } else {
             reportButton.setVisibility(View.GONE);
+        }
+    }
+
+    private static class SetFirewallAsyncTask extends AsyncTask<Void, String, String> {
+        private ProgressDialog dialog;
+        private BlockerFragment fragment;
+        private AlertDialog.Builder builder;
+        private AppDatabase appDatabase;
+        private ContentBlocker contentBlocker;
+
+        SetFirewallAsyncTask(BlockerFragment fragment, Activity activity, AppDatabase appDatabase) {
+            this.fragment = fragment;
+            this.appDatabase = appDatabase;
+            this.dialog = new ProgressDialog(activity);
+            this.dialog.setCancelable(false);
+            builder = new AlertDialog.Builder(activity);
+            this.contentBlocker = DeviceAdminInteractor.getInstance().getContentBlocker();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (contentBlocker.isEnabled()) {
+                dialog.setMessage("Disabling Adhell...");
+            } else {
+                dialog.setMessage("Enabling Adhell...");
+            }
+            dialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            dialog.setMessage(values[0]);
+        }
+
+        @Override
+        protected String doInBackground(Void... args) {
+            if (contentBlocker.isEnabled()) {
+                contentBlocker.disableBlocker();
+            } else {
+                try {
+                    publishProgress("Processing custom rules...");
+                    contentBlocker.processCustomRules();
+                } catch (Exception e) {
+                    contentBlocker.disableBlocker();
+                    return "Failed on processing custom rules: " + e.getMessage();
+                }
+
+                try {
+                    publishProgress("Processing mobile restricted apps...");
+                    contentBlocker.processMobileRestrictedApps();
+                } catch (Exception e) {
+                    contentBlocker.disableBlocker();
+                    return "Failed on processing mobile restricted apps: " + e.getMessage();
+                }
+
+                try {
+                    publishProgress("Processing white-listed apps...");
+                    contentBlocker.processWhitelistedApps();
+                } catch (Exception e) {
+                    contentBlocker.disableBlocker();
+                    return "Failed on processing white-listed apps: " + e.getMessage();
+                }
+
+                try {
+                    publishProgress("Processing white-listed domains...");
+                    contentBlocker.processWhitelistedDomains();
+                } catch (Exception e) {
+                    contentBlocker.disableBlocker();
+                    return "Failed on processing white-listed domains: " + e.getMessage();
+                }
+
+                try {
+                    int size = BlockUrlUtils.getUniqueBlockedUrls(appDatabase).size();
+                    publishProgress("Processing " + size + " blocked domains...");
+                    contentBlocker.processBlockedDomains();
+                } catch (Exception e) {
+                    contentBlocker.disableBlocker();
+                    return "Failed on processing blocked domains: " + e.getMessage();
+                }
+
+                contentBlocker.enableBlocker();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String message) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            fragment.updateUserInterface();
+
+            if (message != null) {
+                builder.setMessage(message);
+                builder.setTitle("Error");
+                builder.show();
+            }
         }
     }
 

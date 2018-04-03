@@ -50,44 +50,29 @@ public class ContentBlocker56 implements ContentBlocker {
         if (mFirewall == null) {
             return false;
         }
-        if (isEnabled()) {
-            disableBlocker();
-        }
 
-        boolean result;
         try {
-            processCustomRules();
-            processMobileRestrictedApps();
-            processWhitelistedApps();
-            processWhitelistedDomains();
-            processBlockedDomains();
-            result = true;
-        } catch (Exception e) {
-            result = false;
-        }
-
-        if (result) {
-            try {
-                if (!mFirewall.isFirewallEnabled()) {
-                    LogUtils.getInstance().writeInfo("Enabling firewall...");
-                    mFirewall.enableFirewall(true);
-                }
-                if (!mFirewall.isDomainFilterReportEnabled()) {
-                    LogUtils.getInstance().writeInfo("Enabling firewall report...");
-                    mFirewall.enableDomainFilterReport(true);
-                }
-            } catch (SecurityException e) {
-                LogUtils.getInstance().writeError("Failed to enable firewall: " + e.getMessage(), e);
+            if (!mFirewall.isFirewallEnabled()) {
+                LogUtils.getInstance().writeInfo("\nEnabling firewall...");
+                mFirewall.enableFirewall(true);
             }
+            if (!mFirewall.isDomainFilterReportEnabled()) {
+                LogUtils.getInstance().writeInfo("Enabling firewall report...");
+                mFirewall.enableDomainFilterReport(true);
+            }
+        } catch (SecurityException e) {
+            LogUtils.getInstance().writeError("Failed to enable firewall: " + e.getMessage(), e);
+            return false;
+        } finally {
+            LogUtils.getInstance().writeInfo("Done");
+            LogUtils.getInstance().close();
         }
 
-        LogUtils.getInstance().writeInfo("Done");
-        LogUtils.getInstance().close();
-
-        return result;
+        return true;
     }
 
-    private void processCustomRules() throws Exception {
+    @Override
+    public void processCustomRules() throws Exception {
         LogUtils.getInstance().writeInfo("\nProcessing custom rules...");
 
         List<UserBlockUrl> userBlockUrls = appDatabase.userBlockUrlDao().getAll2();
@@ -113,7 +98,8 @@ public class ContentBlocker56 implements ContentBlocker {
         }
     }
 
-    private void processMobileRestrictedApps() throws Exception {
+    @Override
+    public void processMobileRestrictedApps() throws Exception {
         LogUtils.getInstance().writeInfo("\nProcessing mobile restricted apps...");
 
         List<AppInfo> restrictedApps = appDatabase.applicationInfoDao().getMobileRestrictedApps();
@@ -133,7 +119,8 @@ public class ContentBlocker56 implements ContentBlocker {
         addFirewallRules(mobileRules);
     }
 
-    private void processWhitelistedApps() throws Exception {
+    @Override
+    public void processWhitelistedApps() throws Exception {
         LogUtils.getInstance().writeInfo("\nProcessing white-listed apps...");
 
         // Create domain filter rule for white listed apps
@@ -152,7 +139,8 @@ public class ContentBlocker56 implements ContentBlocker {
         addDomainFilterRules(rules);
     }
 
-    private void processWhitelistedDomains() throws Exception {
+    @Override
+    public void processWhitelistedDomains() throws Exception {
         LogUtils.getInstance().writeInfo("\nProcessing white-listed domains...");
 
         // Process user-defined white list
@@ -201,7 +189,8 @@ public class ContentBlocker56 implements ContentBlocker {
         }
     }
 
-    private void processBlockedDomains() throws Exception {
+    @Override
+    public void processBlockedDomains() throws Exception {
         LogUtils.getInstance().writeInfo("\nProcessing blocked domains...");
 
         Set<String> denyList = BlockUrlUtils.getUniqueBlockedUrls(appDatabase);
