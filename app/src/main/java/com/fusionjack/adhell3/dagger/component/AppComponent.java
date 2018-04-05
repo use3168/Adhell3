@@ -11,6 +11,7 @@ import com.fusionjack.adhell3.dagger.scope.AdhellApplicationScope;
 import com.fusionjack.adhell3.fragments.AdhellPermissionInAppsFragment;
 import com.fusionjack.adhell3.fragments.AdhellPermissionInfoFragment;
 import com.fusionjack.adhell3.fragments.AdhellReportsFragment;
+import com.fusionjack.adhell3.fragments.AppFlag;
 import com.fusionjack.adhell3.fragments.BlockedUrlSettingFragment;
 import com.fusionjack.adhell3.fragments.BlockerFragment;
 import com.fusionjack.adhell3.fragments.MobileRestricterFragment;
@@ -58,5 +59,7 @@ public interface AppComponent {
     void inject(AdhellPermissionInAppsFragment adhellPermissionInAppsFragment);
 
     void inject(DatabaseFactory databaseFactory);
+
+    void inject(AppFlag flag);
 
 }

@@ -2,7 +2,6 @@ package com.fusionjack.adhell3.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.widget.ListView;
 
@@ -23,22 +22,17 @@ public class LoadAppAsyncTask extends AsyncTask<Void, Void, List<AppInfo>> {
     static final int SORTED_RESTRICTED = 5;
 
     private WeakReference<Context> contextReference;
-    private AppDatabase appDatabase;
-    private PackageManager packageManager;
     private String text;
     private int sortState;
     private int layout;
-    private boolean disabler;
+    private AppFlag appFlag;
 
-    LoadAppAsyncTask(String text, int sortState, int layout, boolean disabler,
-                     Context context, AppDatabase appDatabase, PackageManager packageManager) {
+    LoadAppAsyncTask(String text, int sortState, int layout, AppFlag appFlag, Context context) {
         this.text = text;
         this.sortState = sortState;
         this.layout = layout;
-        this.disabler = disabler;
+        this.appFlag = appFlag;
         this.contextReference = new WeakReference<>(context);
-        this.appDatabase = appDatabase;
-        this.packageManager = packageManager;
     }
 
     @Override
@@ -50,7 +44,7 @@ public class LoadAppAsyncTask extends AsyncTask<Void, Void, List<AppInfo>> {
     protected void onPostExecute(List<AppInfo> packageList) {
         Context context = contextReference.get();
         if (context != null) {
-            AppInfoAdapter adapter = new AppInfoAdapter(packageList, disabler, context, packageManager);
+            AppInfoAdapter adapter = new AppInfoAdapter(packageList, appFlag, context);
             ListView listView = ((Activity)context).findViewById(layout);
             listView.setAdapter(adapter);
             listView.invalidateViews();
@@ -58,6 +52,7 @@ public class LoadAppAsyncTask extends AsyncTask<Void, Void, List<AppInfo>> {
     }
 
     private List<AppInfo> getListFromDb() {
+        AppDatabase appDatabase = appFlag.getAppDatabase();
         String filterText = '%' + text + '%';
         switch (sortState) {
             case SORTED_DISABLED_ALPHABETICALLY:

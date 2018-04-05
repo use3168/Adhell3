@@ -1,15 +1,12 @@
 package com.fusionjack.adhell3.fragments;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,12 +26,6 @@ import com.fusionjack.adhell3.db.entity.AppInfo;
 import com.fusionjack.adhell3.db.entity.RestrictedPackage;
 import com.fusionjack.adhell3.utils.AdhellAppIntegrity;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -45,15 +36,13 @@ import static com.fusionjack.adhell3.fragments.LoadAppAsyncTask.SORTED_RESTRICTE
 import static com.fusionjack.adhell3.fragments.LoadAppAsyncTask.SORTED_RESTRICTED_INSTALL_TIME;
 
 public class MobileRestricterFragment extends Fragment {
-
     @Inject
     AppDatabase appDatabase;
-    @Inject
-    PackageManager packageManager;
 
     private Context context;
-    private int sortState = SORTED_RESTRICTED_ALPHABETICALLY;
+    private int sortState;
     private int layout;
+    private AppFlag appFlag;
 
     public MobileRestricterFragment() {
     }
@@ -63,6 +52,8 @@ public class MobileRestricterFragment extends Fragment {
         super.onCreate(savedInstanceState);
         App.get().getAppComponent().inject(this);
         context = getContext();
+        appFlag = AppFlag.createRestrictedFlag();
+        sortState = SORTED_RESTRICTED_ALPHABETICALLY;
     }
 
     @Override
@@ -88,10 +79,10 @@ public class MobileRestricterFragment extends Fragment {
 
         SwipeRefreshLayout swipeContainer = view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(() ->
-                new RefreshAppAsyncTask(sortState, layout, false, context, appDatabase, packageManager).execute()
+                new RefreshAppAsyncTask(sortState, layout, appFlag, context).execute()
         );
 
-        new LoadAppAsyncTask("", sortState, layout, false, context, appDatabase, packageManager).execute();
+        new LoadAppAsyncTask("", sortState, layout, appFlag, context).execute();
         return view;
     }
 
@@ -110,7 +101,7 @@ public class MobileRestricterFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String text) {
-                new LoadAppAsyncTask(text, sortState, layout, false, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask(text, sortState, layout, appFlag, context).execute();
                 return false;
             }
         });
@@ -125,19 +116,19 @@ public class MobileRestricterFragment extends Fragment {
                 if (sortState == SORTED_RESTRICTED_ALPHABETICALLY) break;
                 sortState = SORTED_RESTRICTED_ALPHABETICALLY;
                 Toast.makeText(context, getString(R.string.app_list_sorted_by_alphabet), Toast.LENGTH_SHORT).show();
-                new LoadAppAsyncTask("", sortState, layout, false, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask("", sortState, layout, appFlag, context).execute();
                 break;
             case R.id.sort_by_time_item:
                 if (sortState == SORTED_RESTRICTED_INSTALL_TIME) break;
                 sortState = SORTED_RESTRICTED_INSTALL_TIME;
                 Toast.makeText(context, getString(R.string.app_list_sorted_by_date), Toast.LENGTH_SHORT).show();
-                new LoadAppAsyncTask("", sortState, layout, false, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask("", sortState, layout, appFlag, context).execute();
                 break;
             case R.id.sort_restricted_item:
                 if (sortState == SORTED_RESTRICTED) break;
                 sortState = SORTED_RESTRICTED;
                 Toast.makeText(context, getString(R.string.app_list_sorted_by_restricted), Toast.LENGTH_SHORT).show();
-                new LoadAppAsyncTask("", sortState, layout, false, context, appDatabase, packageManager).execute();
+                new LoadAppAsyncTask("", sortState, layout, appFlag, context).execute();
                 break;
             case R.id.restricter_enable_all:
                 Toast.makeText(context, getString(R.string.enabled_all_restricted), Toast.LENGTH_SHORT).show();
@@ -154,7 +145,7 @@ public class MobileRestricterFragment extends Fragment {
                 appDatabase.applicationInfoDao().insert(app);
             }
             appDatabase.restrictedPackageDao().deleteAll();
-            new LoadAppAsyncTask("", sortState, layout, false, context, appDatabase, packageManager).execute();
+            new LoadAppAsyncTask("", sortState, layout, appFlag, context).execute();
         });
     }
 

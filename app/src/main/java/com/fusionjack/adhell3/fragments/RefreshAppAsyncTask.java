@@ -1,8 +1,8 @@
 package com.fusionjack.adhell3.fragments;
 
 import android.app.Activity;
+import android.app.enterprise.ApplicationPolicy;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 
@@ -20,65 +20,72 @@ import java.util.List;
 
 public class RefreshAppAsyncTask extends AsyncTask<Void, Void, Void> {
     private WeakReference<Context> contextReference;
-    private AppDatabase appDatabase;
-    private PackageManager packageManager;
     private int sortState;
     private int layout;
-    private boolean disabler;
+    private AppFlag appFlag;
 
-    RefreshAppAsyncTask(int sortState, int layout, boolean disabler,
-                        Context context, AppDatabase appDatabase, PackageManager packageManager) {
+    RefreshAppAsyncTask(int sortState, int layout, AppFlag appFlag, Context context) {
         this.sortState = sortState;
         this.layout = layout;
-        this.disabler = disabler;
+        this.appFlag = appFlag;
         this.contextReference = new WeakReference<>(context);
-        this.appDatabase = appDatabase;
-        this.packageManager = packageManager;
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
         // Get first disabled and restricted apps before they get deleted
+        AppDatabase appDatabase = appFlag.getAppDatabase();
         List<AppInfo> disabledApps = appDatabase.applicationInfoDao().getDisabledApps();
         List<AppInfo> restrictedApps = appDatabase.applicationInfoDao().getMobileRestrictedApps();
 
         // Delete all apps info
         appDatabase.applicationInfoDao().deleteAll();
-        AppsListDBInitializer.getInstance().fillPackageDb(packageManager);
+        AppsListDBInitializer.getInstance().fillPackageDb(appFlag.getPackageManager());
 
-        // Disabled apps
-        appDatabase.disabledPackageDao().deleteAll();
-        List<DisabledPackage> disabledPackages = new ArrayList<>();
-        for (AppInfo oldAppInfo : disabledApps) {
-            AppInfo newAppInfo = appDatabase.applicationInfoDao().getByPackageName(oldAppInfo.packageName);
-            if (newAppInfo != null) {
-                newAppInfo.disabled = true;
-                appDatabase.applicationInfoDao().insert(newAppInfo);
+        switch (appFlag.getFlag()) {
+            case DISABLER_FLAG:
+                ApplicationPolicy appPolicy = appFlag.getAppPolicy();
+                if (appPolicy == null) {
+                    break;
+                }
 
-                DisabledPackage disabledPackage = new DisabledPackage();
-                disabledPackage.packageName = newAppInfo.packageName;
-                disabledPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
-                disabledPackages.add(disabledPackage);
-            }
+                appDatabase.disabledPackageDao().deleteAll();
+                List<DisabledPackage> disabledPackages = new ArrayList<>();
+                for (AppInfo oldAppInfo : disabledApps) {
+                    appPolicy.setEnableApplication(oldAppInfo.packageName);
+                    AppInfo newAppInfo = appDatabase.applicationInfoDao().getByPackageName(oldAppInfo.packageName);
+                    if (newAppInfo != null) {
+                        newAppInfo.disabled = true;
+                        appDatabase.applicationInfoDao().insert(newAppInfo);
+                        appPolicy.setDisableApplication(newAppInfo.packageName);
+
+                        DisabledPackage disabledPackage = new DisabledPackage();
+                        disabledPackage.packageName = newAppInfo.packageName;
+                        disabledPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
+                        disabledPackages.add(disabledPackage);
+                    }
+                }
+                appDatabase.disabledPackageDao().insertAll(disabledPackages);
+                break;
+
+            case RESTRICTED_FLAG:
+                appDatabase.restrictedPackageDao().deleteAll();
+                List<RestrictedPackage> restrictedPackages = new ArrayList<>();
+                for (AppInfo oldAppInfo : restrictedApps) {
+                    AppInfo newAppInfo = appDatabase.applicationInfoDao().getByPackageName(oldAppInfo.packageName);
+                    if (newAppInfo != null) {
+                        newAppInfo.mobileRestricted = true;
+                        appDatabase.applicationInfoDao().insert(newAppInfo);
+
+                        RestrictedPackage restrictedPackage = new RestrictedPackage();
+                        restrictedPackage.packageName = newAppInfo.packageName;
+                        restrictedPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
+                        restrictedPackages.add(restrictedPackage);
+                    }
+                }
+                appDatabase.restrictedPackageDao().insertAll(restrictedPackages);
+                break;
         }
-        appDatabase.disabledPackageDao().insertAll(disabledPackages);
-
-        // Restricted apps
-        appDatabase.restrictedPackageDao().deleteAll();
-        List<RestrictedPackage> restrictedPackages = new ArrayList<>();
-        for (AppInfo oldAppInfo : restrictedApps) {
-            AppInfo newAppInfo = appDatabase.applicationInfoDao().getByPackageName(oldAppInfo.packageName);
-            if (newAppInfo != null) {
-                newAppInfo.mobileRestricted = true;
-                appDatabase.applicationInfoDao().insert(newAppInfo);
-
-                RestrictedPackage restrictedPackage = new RestrictedPackage();
-                restrictedPackage.packageName = newAppInfo.packageName;
-                restrictedPackage.policyPackageId = AdhellAppIntegrity.DEFAULT_POLICY_ID;
-                restrictedPackages.add(restrictedPackage);
-            }
-        }
-        appDatabase.restrictedPackageDao().insertAll(restrictedPackages);
 
         return null;
     }
@@ -90,7 +97,7 @@ public class RefreshAppAsyncTask extends AsyncTask<Void, Void, Void> {
             SwipeRefreshLayout swipeContainer = ((Activity) context).findViewById(R.id.swipeContainer);
             swipeContainer.setRefreshing(false);
 
-            new LoadAppAsyncTask("", sortState, layout, disabler, context, appDatabase, packageManager).execute();
+            new LoadAppAsyncTask("", sortState, layout, appFlag, context).execute();
         }
     }
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.fusionjack.adhell3.R;
 import com.fusionjack.adhell3.db.entity.AppInfo;
+import com.fusionjack.adhell3.fragments.AppFlag;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -20,14 +21,12 @@ public class AppInfoAdapter extends BaseAdapter {
 
     private List<AppInfo> applicationInfoList;
     private WeakReference<Context> contextReference;
-    private PackageManager packageManager;
-    private boolean disabler;
+    private AppFlag appFlag;
 
-    public AppInfoAdapter(List<AppInfo> appInfoList, boolean disabler, Context context, PackageManager packageManager) {
+    public AppInfoAdapter(List<AppInfo> appInfoList, AppFlag appFlag, Context context) {
         this.applicationInfoList = appInfoList;
         this.contextReference = new WeakReference<>(context);
-        this.packageManager = packageManager;
-        this.disabler = disabler;
+        this.appFlag = appFlag;
     }
 
     @Override
@@ -63,14 +62,24 @@ public class AppInfoAdapter extends BaseAdapter {
         AppInfo appInfo = applicationInfoList.get(position);
         holder.nameH.setText(appInfo.appName);
         holder.packageH.setText(appInfo.packageName);
-        holder.switchH.setChecked(disabler ? !appInfo.disabled : !appInfo.mobileRestricted);
+        boolean checked = false;
+        switch (appFlag.getFlag()) {
+            case DISABLER_FLAG:
+                checked = appInfo.disabled;
+                break;
+            case RESTRICTED_FLAG:
+                checked = appInfo.mobileRestricted;
+                break;
+        }
+        holder.switchH.setChecked(!checked);
+
         if (appInfo.system) {
             convertView.findViewById(R.id.systemOrNot).setVisibility(View.VISIBLE);
         } else {
             convertView.findViewById(R.id.systemOrNot).setVisibility(View.GONE);
         }
         try {
-            holder.imageH.setImageDrawable(packageManager.getApplicationIcon(appInfo.packageName));
+            holder.imageH.setImageDrawable(appFlag.getPackageManager().getApplicationIcon(appInfo.packageName));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
