@@ -24,6 +24,7 @@ import com.fusionjack.adhell3.utils.BlockUrlUtils;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -59,7 +60,8 @@ public class BlockUrlProviderAdapter extends ArrayAdapter<BlockUrlProvider> {
             blockUrlProviderTextView.setText(blockUrlProvider.url + "");
             blockUrlCountTextView.setText(blockUrlProvider.count + "");
             urlProviderCheckBox.setChecked(blockUrlProvider.selected);
-            lastUpdatedTextView.setText(dateFormatter.format(blockUrlProvider.lastUpdated));
+            Date lastUpdated = blockUrlProvider.lastUpdated == null ? new Date() : blockUrlProvider.lastUpdated;
+            lastUpdatedTextView.setText(dateFormatter.format(lastUpdated));
             if (!blockUrlProvider.deletable) {
                 deleteUrlImageView.setVisibility(View.GONE);
             }
