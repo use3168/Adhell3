@@ -2,6 +2,7 @@ package com.fusionjack.adhell3.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.enterprise.ApplicationPermissionControlPolicy;
 import android.app.enterprise.ApplicationPolicy;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,12 +29,14 @@ import com.fusionjack.adhell3.blocker.ContentBlocker56;
 import com.fusionjack.adhell3.blocker.ContentBlocker57;
 import com.fusionjack.adhell3.db.AppDatabase;
 import com.fusionjack.adhell3.db.DatabaseFactory;
+import com.fusionjack.adhell3.db.entity.AppPermission;
 import com.fusionjack.adhell3.db.entity.BlockUrl;
 import com.fusionjack.adhell3.db.entity.BlockUrlProvider;
 import com.fusionjack.adhell3.db.entity.DisabledPackage;
 import com.fusionjack.adhell3.utils.BlockUrlUtils;
 import com.fusionjack.adhell3.utils.DeviceAdminInteractor;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +56,10 @@ public class BlockerFragment extends Fragment {
     @Nullable
     @Inject
     ApplicationPolicy appPolicy;
+
+    @Nullable
+    @Inject
+    ApplicationPermissionControlPolicy appControlPolicy;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -84,7 +91,7 @@ public class BlockerFragment extends Fragment {
                 new BackupDatabaseAsyncTask(getActivity()).execute();
                 break;
             case R.id.restore_database:
-                new RestoreDatabaseAsyncTask(this, getActivity(), appDatabase, appPolicy).execute();
+                new RestoreDatabaseAsyncTask(this, getActivity(), appDatabase, appPolicy, appControlPolicy).execute();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -307,14 +314,17 @@ public class BlockerFragment extends Fragment {
         private BlockerFragment fragment;
         private AppDatabase appDatabase;
         private ApplicationPolicy appPolicy;
+        private ApplicationPermissionControlPolicy appControlPolicy;
 
         RestoreDatabaseAsyncTask(BlockerFragment fragment, Activity activity,
-                                 AppDatabase appDatabase, ApplicationPolicy appPolicy) {
+                                 AppDatabase appDatabase, ApplicationPolicy appPolicy,
+                                 ApplicationPermissionControlPolicy appControlPolicy) {
             this.fragment = fragment;
             this.builder = new AlertDialog.Builder(activity);
             this.dialog = new ProgressDialog(activity);
             this.appDatabase = appDatabase;
             this.appPolicy = appPolicy;
+            this.appControlPolicy = appControlPolicy;
         }
 
         @Override
@@ -348,6 +358,14 @@ public class BlockerFragment extends Fragment {
                 List<DisabledPackage> disabledPackages = appDatabase.disabledPackageDao().getAll();
                 for (DisabledPackage disabledPackage : disabledPackages) {
                     appPolicy.setDisableApplication(disabledPackage.packageName);
+                }
+
+                publishProgress("Disabling app's permissions...");
+                List<AppPermission> appPermissions = appDatabase.appPermissionDao().getAll();
+                for (AppPermission appPermission : appPermissions) {
+                    List<String> packageList = new ArrayList<>();
+                    packageList.add(appPermission.packageName);
+                    appControlPolicy.addPackagesToPermissionBlackList(appPermission.permissionName, packageList);
                 }
 
                 return null;
