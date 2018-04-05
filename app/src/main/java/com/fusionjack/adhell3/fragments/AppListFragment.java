@@ -17,7 +17,6 @@ import com.fusionjack.adhell3.adapter.AppWhitelistAdapter;
 import com.fusionjack.adhell3.db.entity.AppInfo;
 import com.fusionjack.adhell3.viewmodel.AdhellWhitelistAppsViewModel;
 
-
 public class AppListFragment extends Fragment {
     private static final String TAG = AppListFragment.class.getCanonicalName();
     private ListView appListView;
@@ -27,7 +26,6 @@ public class AppListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.getActivity().setTitle(R.string.adblock_whitelist);
         View view = inflater.inflate(R.layout.fragment_app_list, container, false);
         appListView = view.findViewById(R.id.appList);
         adblockEnabledAppSearchEditText = view.findViewById(R.id.adblockEnabledAppSearchEditText);
@@ -35,14 +33,10 @@ public class AppListFragment extends Fragment {
         adblockEnabledAppSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                charSequence.toString()
-
-
             }
 
             @Override
