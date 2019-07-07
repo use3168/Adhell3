@@ -1,3 +1,7 @@
+# Note - Adhell no longer works for Samsung because ELM key that is required to work is now only available for SEAP partner (paid) only.
+
+---
+
 # How to install ADhell 3?
 
 Step 1: Download Android Studio from https://developer.android.com/studio/install.html
